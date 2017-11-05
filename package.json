@@ -1,0 +1,32 @@
+{
+  "name": "dracowalker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bin/app.js",
+  "engines": {
+    "node": ">= 8"
+  },
+  "keywords": [],
+  "author": "niico",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^8.0.47",
+    "bluebird": "^3.5.1",
+    "cheerio": "^1.0.0-rc.2",
+    "dotenv": "^4.0.0",
+    "draconode": "0.0.3",
+    "dracotext": "0.0.1",
+    "fastify": "^0.31.0",
+    "geolib": "^2.0.24",
+    "googlemaps": "^1.12.0",
+    "js-yaml": "^3.10.0",
+    "lodash": "^4.17.4",
+    "moment": "^2.19.1",
+    "mz": "^2.7.0",
+    "request": "^2.83.0",
+    "request-promise-native": "^1.0.5",
+    "socket.io": "^2.0.4",
+    "winston": "^2.4.0",
+    "yaml": "^0.3.0"
+  }
+}
