@@ -6,9 +6,7 @@ import * as dracoText from 'dracotext';
 
 const strings = dracoText.load('english');
 
-const GoogleMapsAPI = require('googlemaps');
 const geolib = require('geolib');
-Bluebird.promisifyAll(GoogleMapsAPI.prototype);
 
 import APIHelper from './api';
 
@@ -147,6 +145,18 @@ export default class Player {
             }
         }
         return this.state.inventory;
+    }
+
+    async getCreatures() {
+        const client: DracoNode.Client = this.state.client;
+        const response = await client.getUserCreatures();
+        this.apihelper.parse(response);
+        for (const creature of this.state.creatures) {
+            if (!creature.display) {
+                creature.display = strings.getCreature(DracoNode.enums.CreatureType[creature.name]);
+            }
+        }
+        return this.state.creatures;
     }
 
     /**

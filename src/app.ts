@@ -48,7 +48,7 @@ let client: DracoNode.Client;
 async function main() {
     logger.info('App starting...');
     if (config.ui.enabled) {
-        logger.info('go to http://dracoui.nicontoso.eu/ for ui');
+        logger.info('go to http://ui.dracoapi.ml/ for ui');
     }
     try {
         const valid = await proxyhelper.checkProxy();

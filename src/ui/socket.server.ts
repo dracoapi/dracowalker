@@ -42,7 +42,7 @@ export default class SocketServer {
             if (this.initialized) this.ready(socket);
 
             socket.on('inventory_list', msg => this.sendInventory(socket));
-            socket.on('pokemon_list', msg => this.sendPokemons(socket));
+            socket.on('creature_list', msg => this.sendCreatures(socket));
             socket.on('eggs_list', msg => this.sendEggs(socket));
             socket.on('player_stats', msg => this.sendPlayerStats(socket));
             socket.on('transfer_pokemon', msg => this.transferPokemon(socket, msg));
@@ -130,20 +130,19 @@ export default class SocketServer {
      * @param {object} client - the socket client to send info to
      */
     async sendInventory(client) {
-        if (this.state.inventory) {
-            const inventory = await this.player.getInventory();
-            client.emit('inventory_list', inventory);
-        }
+        const inventory = await this.player.getInventory();
+        client.emit('inventory_list', inventory);
     }
 
     /**
      * Send our pokemon list to the client after it request it
      * @param {object} client - the socket client to send info to
      */
-    sendPokemons(client) {
-        client.emit('pokemon_list', {
-            pokemon: this.state.inventory.pokemon,
-            candy: _.keyBy(this.state.inventory.candies, 'family_id'),
+    async sendCreatures(client) {
+        const creatures = await this.player.getCreatures();
+        client.emit('creature_list', {
+            creatures,
+            candy: [],
         });
     }
 

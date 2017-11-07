@@ -52,6 +52,8 @@ export default class APIHelper {
             }
         } else if (response.__type === 'FCatchCreatureResult') {
             this.state.player.avatar = response.avaUpdate;
+        } else if (response.__type === 'FUserCreaturesList') {
+            this.state.creatures = response.userCreatures;
         } else {
             logger.warn('Unhandled response: ' + response.__type);
         }
