@@ -45,7 +45,7 @@ export default class SocketServer {
             socket.on('creature_list', msg => this.sendCreatures(socket));
             socket.on('eggs_list', msg => this.sendEggs(socket));
             socket.on('player_stats', msg => this.sendPlayerStats(socket));
-            socket.on('transfer_pokemon', msg => this.transferPokemon(socket, msg));
+            socket.on('transfer_creature', msg => this.transferCreature(socket, msg));
             socket.on('evolve_pokemon', msg => this.evolvePokemon(socket, msg));
             socket.on('drop_items', msg => this.dropItems(socket, msg));
         });
@@ -169,19 +169,19 @@ export default class SocketServer {
     }
 
     /**
-     * Transfer a pokemon after the client request it
+     * Transfer a creature after the client request it
      * @param {object} client - the socket client to send info to if needed
      * @param {object} msg - message send from the ui
      */
-    transferPokemon(client, msg) {
+    transferCreature(client, msg) {
         const todos: any[] = this.state.todo;
-        const release = _.find(todos, todo => todo.call === 'release_pokemon');
+        const release = _.find(todos, todo => todo.call === 'release_creature');
         if (release) {
-            release.pokemons.push(msg.id);
+            release.creatures.push(msg.id);
         } else {
             this.state.todo.push({
-                call: 'release_pokemon',
-                pokemons: [msg.id],
+                call: 'release_creature',
+                creatures: [msg.id],
             });
         }
     }

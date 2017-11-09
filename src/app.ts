@@ -112,7 +112,7 @@ async function updatePos() {
     await walker.walk();
     socket.sendPosition();
 
-    if (Math.random() > 0.75) await player.cleanInventory();
+    await handlePendingActions();
 
     const max: number = +state.api.config.updateRequestPeriodSeconds;
     const last = state.api.lastMapUpdate;
@@ -126,59 +126,27 @@ async function updatePos() {
 }
 
 async function handlePendingActions() {
-    // // actions have been requested, but we only call them if
-    // // there is nothing going down at the same time
-    // if (state.todo.length > 0) {
-    //     const todo = state.todo.shift();
-    //     if (todo.call === 'level_up') {
-    //         const batch = client.batchStart();
-    //         batch.levelUpRewards(state.inventory.player.level);
-    //         const responses = await apihelper.always(batch).batchCall();
-    //         apihelper.parse(responses);
-    //         await Bluebird.delay(config.delay.levelUp * _.random(900, 1100));
+    // actions have been requested, but we only call them if
+    // there is nothing going down at the same time
+    if (state.todo.length > 0) {
+        const todo = state.todo.shift();
+        if (todo.call === 'release_creature') {
+            logger.info('Release creatures', todo.creatures);
+            await client.releaseCreatures(todo.creatures);
+            await Bluebird.delay(config.delay.release * _.random(900, 1100));
 
-    //     } else if (todo.call === 'release_pokemon') {
-    //         const batch = client.batchStart();
-    //         batch.releasePokemon(todo.pokemons);
-    //         const responses = await apihelper.always(batch).batchCall();
-    //         const info = apihelper.parse(responses);
-    //         if (info.result === 1) {
-    //             logger.info('Pokemon released', todo.pokemons, info);
-    //         } else {
-    //             logger.warn('Error releasing pokemon', info);
-    //         }
-    //         await Bluebird.delay(config.delay.release * _.random(900, 1100));
+        } else if (todo.call === 'evolve_creature') {
+            await Bluebird.delay(config.delay.evolve * _.random(900, 1100));
 
-    //     } else if (todo.call === 'evolve_pokemon') {
-    //         const batch = client.batchStart();
-    //         batch.evolvePokemon(todo.pokemon, 0);
-    //         const responses = await apihelper.always(batch).batchCall();
-    //         const info = apihelper.parse(responses);
-    //         if (info.result === 1) {
-    //             logger.info('Pokemon evolved', todo.pokemon, info);
-    //         } else {
-    //             logger.warn('Error evolving pokemon', info);
-    //         }
-    //         await Bluebird.delay(config.delay.evolve * _.random(900, 1100));
+        } else if (todo.call === 'drop_items') {
+            await Bluebird.delay(config.delay.recycle * _.random(900, 1100));
 
-    //     } else if (todo.call === 'drop_items') {
-    //         const batch = client.batchStart();
-    //         batch.recycleInventoryItem(todo.id, todo.count);
-    //         const responses = await apihelper.always(batch).batchCall();
-    //         const info = apihelper.parse(responses);
-    //         if (info.result === 1) {
-    //             logger.info('Items droped', todo.id, info);
-    //         } else {
-    //             logger.warn('Error dropping items', info);
-    //         }
-    //         await Bluebird.delay(config.delay.recycle * _.random(900, 1100));
-
-    //     } else {
-    //         logger.warn('Unhandled todo: ' + todo.call);
-    //     }
-    // } else {
-    //     await player.cleanInventory();
-    // }
+        } else {
+            logger.warn('Unhandled todo: ' + todo.call);
+        }
+    } else {
+        await player.cleanInventory();
+    }
 }
 
 /**
