@@ -139,6 +139,7 @@ async function handlePendingActions() {
             await Bluebird.delay(config.delay.evolve * _.random(900, 1100));
 
         } else if (todo.call === 'drop_items') {
+            await client.discardItem(todo.id, todo.count);
             await Bluebird.delay(config.delay.recycle * _.random(900, 1100));
 
         } else {

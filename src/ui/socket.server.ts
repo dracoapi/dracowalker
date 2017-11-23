@@ -150,11 +150,13 @@ export default class SocketServer {
      * Send our egg list to a client after it request it
      * @param {object} client - the socket client to send info to
      */
-    sendEggs(client) {
+    async sendEggs(client) {
+        const hatchInfo = await this.player.getHatchingInfo();
         client.emit('eggs_list', {
-            km_walked: this.state.inventory.player.km_walked,
-            egg_incubators: this.state.inventory.egg_incubators,
-            eggs: this.state.inventory.eggs,
+            km_walked: this.state.player.totalDistanceF,
+            egg_incubators: hatchInfo.incubators,
+            eggs: hatchInfo.eggs,
+            max: hatchInfo.max,
         });
     }
 

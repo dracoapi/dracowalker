@@ -159,6 +159,11 @@ export default class Player {
         return this.state.creatures;
     }
 
+    async getHatchingInfo() {
+        const client: DracoNode.Client = this.state.client;
+        return client.getHatchingInfo();
+    }
+
     /**
      * Calculte distance from current pos to a target.
      * @param {object} target position
