@@ -68,6 +68,9 @@ async function main() {
         await client.boot({
             userId: config.credentials.userid,
             deviceId: config.credentials.deviceid,
+            login: config.credentials.type,
+            username: config.credentials.username,
+            password: config.credentials.password,
         });
 
         logger.debug('Login...');

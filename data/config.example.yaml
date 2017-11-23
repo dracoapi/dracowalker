@@ -1,7 +1,28 @@
+# User credentials
 credentials:
+  # DEVICE or GOOGLE
+  type: GOOGLE
   deviceId: 'aaa-aaa'
   userId: 'aaaa-bbb-ccc'
-  
+  username: 'username'
+  password: 'password'
+
+# Initial position when starting the app (ex: Paris)
+pos:
+  lat: 48.8628407
+  lng: 2.3286178
+
+# Speed in km/h (default = 4)
+# auto = 90% of run speed from server
+speed: auto
+
+# If nothing is set, direct call will be made
+# If a proxy is set it will be used (like http://server:8080)
+# If 'auto' is set, a proxy from https://www.sslproxies.org will be used
+proxy: 
+  # url: auto
+  url: http://localhost:8888
+
 ui:
   enabled: true
 
