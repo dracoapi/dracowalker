@@ -92,7 +92,7 @@ async function main() {
         setTimeout(updatePos, 1000);
 
     } catch (e) {
-        logger.error(e, e.message);
+        logger.error(e);
 
         if (e.message === 'Invalid proxy.') proxyhelper.badProxy();
         else if (e.message.indexOf('tunneling socket could not be established') >= 0) proxyhelper.badProxy(); // no connection

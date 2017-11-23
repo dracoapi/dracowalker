@@ -2,6 +2,8 @@ import * as logger from 'winston';
 import * as _ from 'lodash';
 import * as fs from 'mz/fs';
 
+import * as database from './data';
+
 /**
  * Helper class to deal with api requests and reponses.
  * Responsible for keeping state up to date.
@@ -82,6 +84,13 @@ export default class APIHelper {
                 chests: response.items.find(o => o.__type === 'FChestUpdate'),
                 buildings,
             };
+
+            if (this.config.database.save) {
+                const wilds = this.state.map.creatures.wilds;
+                for (const wild of wilds) {
+                    database.save('wild', wild);
+                }
+            }
         }
     }
 }
