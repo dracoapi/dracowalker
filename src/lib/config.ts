@@ -44,6 +44,7 @@ module.exports.load = function() {
             checkip: true,
             url: null,
         },
+        database: { },
         loglevel: 'info',
     };
 
