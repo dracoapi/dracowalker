@@ -1,0 +1,7 @@
+credentials:
+  deviceId: 'aaa-aaa'
+  userId: 'aaaa-bbb-ccc'
+  
+ui:
+  enabled: true
+
