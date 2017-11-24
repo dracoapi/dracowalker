@@ -65,13 +65,7 @@ async function main() {
         logger.debug('Ping server...');
         await client.ping(true);
 
-        await client.boot({
-            userId: config.credentials.userid,
-            deviceId: config.credentials.deviceid,
-            login: config.credentials.type,
-            username: config.credentials.username,
-            password: config.credentials.password,
-        });
+        await client.boot(config.credentials);
 
         logger.debug('Login...');
         let response = await client.login();
