@@ -93,25 +93,22 @@ export default class Player {
     }
 
     getThrowBall() {
-        var haveSimple = this.state.inventory.some(x => x.type == 0);
+        const haveSimple = this.state.inventory.some(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_SIMPLE);
         if (haveSimple) {
-            logger.debug('Using Simple Ball...');
             return DracoNode.enums.ItemType.MAGIC_BALL_SIMPLE;
         }
 
-        var haveNormal = this.state.inventory.some(x => x.type == 1);
+        const haveNormal = this.state.inventory.some(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_NORMAL);
         if (haveNormal) {
-            logger.debug('Using Normal Ball...');
             return DracoNode.enums.ItemType.MAGIC_BALL_NORMAL;
         }
 
-        var haveGood = this.state.inventory.some(x => x.type == 2);
+        const haveGood = this.state.inventory.some(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_GOOD);
         if (haveGood) {
-            logger.debug('Using Good Ball...');
             return DracoNode.enums.ItemType.MAGIC_BALL_GOOD;
         }
-        logger.info('No balls left!');
-        return DracoNode.enums.ItemType.MAGIC_BALL_SIMPLE;
+
+        return -1;
     }
 
     async catchCreatures() {
@@ -120,25 +117,28 @@ export default class Player {
         const range = this.state.player.avatar.activationRadius * 0.95;
         const wilds = this.state.map.creatures.wilds;
         for (const creature of wilds) {
-            if (this.state.player.creaturecount == this.state.player.storage.creatures) {
-                logger.info('Creature bag full!');
-            }
-            else if (!this.state.inventory.some(x => x.type == 0) && !this.state.inventory.some(x => x.type == 1) && !this.state.inventory.some(x => x.type == 2) ) {
-                logger.info('Out of Balls!');
-            }
-            else if (this.distance(creature) < range) {
+            if (this.state.player.creaturecount === this.state.player.storage.creatures) {
+                logger.warn('Creature bag full!');
+            } else if (this.getThrowBall() < 0) {
+                logger.warn('Out of Balls!');
+            } else if (this.distance(creature) < range) {
                 // creature.id, creature.name, crezture.coords
                 const name = strings.getCreature(DracoNode.enums.CreatureType[creature.name]);
-                logger.info('Try catching a wild... ' + name);
+                logger.debug('Try catching a wild ' + name);
 
                 await client.encounter(creature.id);
                 let response;
                 let caught = false;
                 let tries = 3;
                 while (!caught && (tries-- > 0)) {
+                    const ball = this.getThrowBall();
+                    if (ball < 0) {
+                        logger.warn('No more ball to throw.');
+                        break;
+                    }
                     await client.delay(this.config.delay.encouter * _.random(900, 1100));
                     response = await client.catch(creature.id,
-                                                  this.getThrowBall(),
+                                                  ball,
                                                   0, // 0.5 + Math.random() * 0.5,
                                                   Math.random() >= 0.5);
                     this.apihelper.parse(response);
@@ -150,7 +150,7 @@ export default class Player {
                     const creature = response.userCreature;
                     creature.display = name;
                     creature.ball = response.ballType;
-                    this.state.player.creaturecount++;
+                    // this.state.player.creaturecount++;
                     this.state.socket.sendCreatureCaught(creature);
                 }
 
@@ -175,10 +175,9 @@ export default class Player {
         const client: DracoNode.Client = this.state.client;
         const response = await client.getUserCreatures();
         this.apihelper.parse(response);
-        const creaturecount = 0;
         for (const creature of this.state.creatures) {
             if (!creature.display) {
-                this.state.player.creaturecount++;
+                // this.state.player.creaturecount++;
                 creature.display = strings.getCreature(DracoNode.enums.CreatureType[creature.name]);
             }
         }
