@@ -36,7 +36,7 @@ export default class Player {
         if (total >= this.state.player.storage.items) {
             logger.warn('Inventory full');
         }
-        if (this.config.inventory && total >= 0.8 * this.state.player.storage.items) {
+        if (this.config.inventory && total >= 0.9 * this.state.player.storage.items) {
             logger.info('Clean inventory');
             const limits = this.config.inventory;
             for (const item of items) {
@@ -48,6 +48,8 @@ export default class Player {
                         const response = await client.discardItem(item.type, drop);
                         if (!response) {
                             logger.warn('Error dropping items');
+                        } else {
+                            item.count -= drop;
                         }
                         await Bluebird.delay(this.config.delay.recycle * _.random(900, 1100));
                     }
@@ -116,6 +118,7 @@ export default class Player {
 
         const range = this.state.player.avatar.activationRadius * 0.95;
         const wilds = this.state.map.creatures.wilds;
+        if (wilds.length > 0) logger.debug(`${wilds.length} wild creature(s) around.`);
         for (const creature of wilds) {
             if (this.state.player.creaturecount === this.state.player.storage.creatures) {
                 logger.warn('Creature bag full!');

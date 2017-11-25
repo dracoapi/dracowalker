@@ -34,9 +34,10 @@ export default class Walker {
      * @return {object} next building to go to
      */
     findNextBuilding(): any {
-        let buildings: any[] = this.state.map.buildings;
+        if (!this.state.map) return null;
 
         // get stop builing not already visited or in cooldown
+        let buildings: any[] = this.state.map.buildings;
         buildings = buildings.filter(b => b.type === DracoNode.enums.BuildingType.STOP &&
                                           b.available && b.pitstop && !b.pitstop.cooldown &&
                                           this.state.path.visited.indexOf(b.id) < 0);
