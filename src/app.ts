@@ -15,7 +15,7 @@ import SocketServer from './ui/socket.server';
 
 const config = require('./lib/config').load();
 
-if (!config.credentials.userid) {
+if (!config.credentials.deviceId) {
     logger.error('Invalid credentials. Please fill data/config.yaml.');
     logger.error('look at config.example.yaml for example.');
     process.exit();
@@ -70,6 +70,7 @@ async function main() {
         logger.debug('Login...');
         let response = await client.login();
         apihelper.parse(response);
+        if (!response) throw new Error('Unable to login');
 
         logger.debug('Load...');
         await client.load();
@@ -89,13 +90,17 @@ async function main() {
         setTimeout(updatePos, 1000);
 
     } catch (e) {
-        logger.error(e);
-
-        if (e.message === 'Invalid proxy.') proxyhelper.badProxy();
-        else if (e.message.indexOf('tunneling socket could not be established') >= 0) proxyhelper.badProxy(); // no connection
-        else if (e.message.indexOf('ECONNRESET') >= 0) proxyhelper.badProxy(); // connection reset
-        else if (e.message.indexOf('ECONNREFUSED ') >= 0) proxyhelper.badProxy(); // connection refused
-        else if (e.message.indexOf('403') >= 0) proxyhelper.badProxy(); // ip banned?
+        if (e.message === 'Invalid proxy.' ||
+            (e.name === 'StatusCodeError' && e.statusCode === 403) ||
+            e.message.indexOf('tunneling socket could not be established') > 0 ||
+            e.message.indexOf('ECONNRESET') >= 0 || // connection reset
+            e.message.indexOf('ECONNREFUSED ') >= 0 || // connection refused
+            e.message.indexOf('403') >= 0) {// ip banned?
+            logger.error('Bad proxy');
+            proxyhelper.badProxy();
+        } else {
+            logger.error(e);
+        }
 
         logger.error('Exiting.');
         process.exit();
