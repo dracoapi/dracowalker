@@ -57,6 +57,8 @@ export default class APIHelper {
             this.state.player.avatar = response.avaUpdate;
         } else if (response.__type === 'FUserCreaturesList') {
             this.state.creatures = response.userCreatures;
+        } else if (response.__type === 'FCreadex') {
+            // nothing to do
         } else {
             logger.warn('Unhandled response: ' + response.__type);
         }

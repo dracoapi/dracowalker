@@ -81,6 +81,13 @@ async function main() {
         response = await client.getUserItems();
         apihelper.parse(response);
 
+        logger.debug('Get creadex...');
+        response = await client.getCreadex();
+        apihelper.parse(response);
+
+        logger.debug('Get creatures...');
+        await player.getCreatures();
+
         await mapRefresh();
         socket.ready();
 

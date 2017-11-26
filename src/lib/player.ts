@@ -120,7 +120,7 @@ export default class Player {
         const wilds = this.state.map.creatures.wilds;
         if (wilds.length > 0) logger.debug(`${wilds.length} wild creature(s) around.`);
         for (const creature of wilds) {
-            if (this.state.player.creaturecount === this.state.player.storage.creatures) {
+            if (this.state.creatures.length >= this.state.player.storage.creatures) {
                 logger.warn('Creature bag full!');
             } else if (this.getThrowBall() < 0) {
                 logger.warn('Out of Balls!');
@@ -145,16 +145,19 @@ export default class Player {
                                                   0, // 0.5 + Math.random() * 0.5,
                                                   Math.random() >= 0.5);
                     this.apihelper.parse(response);
+                    this.state.inventory.find(i => i.type === ball).count--;
                     caught = response.caught;
                 }
 
-                if (response.caught) {
+                if (caught) {
                     logger.info(`${name} caught!`);
                     const creature = response.userCreature;
                     creature.display = name;
                     creature.ball = response.ballType;
-                    // this.state.player.creaturecount++;
                     this.state.socket.sendCreatureCaught(creature);
+                    if (this.state.creatures) {
+                        this.state.creatures.push(creature);
+                    }
                 }
 
                 await Bluebird.delay(this.config.delay.catch * _.random(900, 1100));
@@ -180,7 +183,6 @@ export default class Player {
         this.apihelper.parse(response);
         for (const creature of this.state.creatures) {
             if (!creature.display) {
-                // this.state.player.creaturecount++;
                 creature.display = strings.getCreature(DracoNode.enums.CreatureType[creature.name]);
             }
         }
