@@ -1,4 +1,3 @@
-import * as Bluebird from 'bluebird';
 import * as logger from 'winston';
 import * as _ from 'lodash';
 import * as fastify from 'fastify';
@@ -41,10 +40,10 @@ export default class SocketServer {
             logger.debug('UI connected.');
             if (this.initialized) this.ready(socket);
 
-            socket.on('inventory_list', msg => this.sendInventory(socket));
-            socket.on('creature_list', msg => this.sendCreatures(socket));
-            socket.on('eggs_list', msg => this.sendEggs(socket));
-            socket.on('player_stats', msg => this.sendPlayerStats(socket));
+            socket.on('inventory_list', () => this.sendInventory(socket));
+            socket.on('creature_list', () => this.sendCreatures(socket));
+            socket.on('eggs_list', () => this.sendEggs(socket));
+            socket.on('player_stats', () => this.sendPlayerStats(socket));
             socket.on('transfer_creature', msg => this.transferCreature(socket, msg));
             socket.on('evolve_pokemon', msg => this.evolvePokemon(socket, msg));
             socket.on('drop_items', msg => this.dropItems(socket, msg));

@@ -35,8 +35,6 @@ export default class ProxyHelper {
     async findProxy() {
         if (this.config.proxy.url !== 'auto') return this.config.proxy.url;
 
-        const badUrls = _.map(this.badProxies, p => p.proxy);
-
         const url = 'https://www.sslp' + 'roxies.org/';
         const response = await request.get(url);
         const $ = cheerio.load(response);
@@ -72,7 +70,7 @@ export default class ProxyHelper {
                     return false;
                 }
             }
-            const response = await request.post({
+            await request.post({
                 url: 'https://us.draconiusgo.com/ping',
                 headers: {
                     'Content-Type': 'application /x-www-form-urlencoded',
