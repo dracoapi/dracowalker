@@ -123,9 +123,8 @@ export default class Player {
             if (this.state.creatures.length >= this.state.player.storage.creatures) {
                 logger.warn('Creature bag full!');
             } else if (this.getThrowBall() < 0) {
-                logger.warn('Out of Balls!');
+                logger.warn('Out of balls!');
             } else if (this.distance(creature) < range) {
-                // creature.id, creature.name, crezture.coords
                 const name = strings.getCreature(DracoNode.enums.CreatureType[creature.name]);
                 logger.debug('Try catching a wild ' + name);
 
@@ -189,9 +188,28 @@ export default class Player {
         return this.state.creatures;
     }
 
+    async dispatchIncubators() {
+        const hatchInfo = await this.getHatchingInfo();
+        let freeIncub = hatchInfo.incubators.filter(i => i.eggId === null);
+        let eggs = hatchInfo.eggs.filter(e => e.incubatorId === null);
+        if (freeIncub.length > 0 && eggs.length > 0) {
+            logger.debug('Dispatch incubators');
+            const client: DracoNode.Client = this.state.client;
+            eggs = _.orderBy(eggs, 'totalDistance', 'desc');
+            freeIncub = _.orderBy(freeIncub, 'usagesLeft', 'desc');
+            const max = Math.min(eggs.length, freeIncub.length);
+            for (let i = 0; i < max; i++) {
+                logger.info(`Start hatching a ${eggs[i].totalDistance / 1000}km egg.`);
+                await client.startHatchingEgg(eggs[i].id, freeIncub[i].incubatorId);
+            }
+        }
+    }
+
     async getHatchingInfo() {
         const client: DracoNode.Client = this.state.client;
-        return client.getHatchingInfo();
+        const response = await client.getHatchingInfo();
+        this.apihelper.parse(response);
+        return response;
     }
 
     /**

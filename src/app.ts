@@ -96,6 +96,10 @@ async function main() {
         // update position every second
         setTimeout(updatePos, 1000);
 
+        // check incubators every 5 min
+        player.dispatchIncubators();
+        setTimeout(() => player.dispatchIncubators(), 5 * 60 * 1000);
+
     } catch (e) {
         if (e.message === 'Invalid proxy.' ||
             (e.name === 'StatusCodeError' && e.statusCode === 403) || // ip banned
@@ -115,20 +119,25 @@ async function main() {
 }
 
 async function updatePos() {
-    const path = await walker.checkPath();
-    if (path) socket.sendRoute(path.waypoints);
+    try {
+        const path = await walker.checkPath();
+        if (path) socket.sendRoute(path.waypoints);
 
-    await walker.walk();
-    socket.sendPosition();
+        await walker.walk();
+        socket.sendPosition();
 
-    await handlePendingActions();
+        await handlePendingActions();
 
-    const max: number = +state.api.config.updateRequestPeriodSeconds;
-    const last = state.api.lastMapUpdate;
-    if (!last || moment().subtract(max, 's').isAfter(last.when)) {
-        // no previous call, fire a getMapUpdate
-        // or if it's been enough time since last getMapUpdate
-        await mapRefresh();
+        const max: number = +state.api.config.updateRequestPeriodSeconds;
+        const last = state.api.lastMapUpdate;
+        if (!last || moment().subtract(max, 's').isAfter(last.when)) {
+            // no previous call, fire a getMapUpdate
+            // or if it's been enough time since last getMapUpdate
+            await mapRefresh();
+        }
+    } catch (e) {
+        logger.error(e);
+        if (e.details) logger.error(e.details);
     }
 
     setTimeout(updatePos, 1000);
@@ -151,6 +160,10 @@ async function handlePendingActions() {
             await client.discardItem(todo.id, todo.count);
             await Bluebird.delay(config.delay.recycle * _.random(900, 1100));
 
+        } else if (todo.call === 'open_egg') {
+            const response = await client.openHatchedEgg(todo.incubatorId);
+            apihelper.parse(response);
+
         } else {
             logger.warn('Unhandled todo: ' + todo.call);
         }
@@ -165,26 +178,21 @@ async function handlePendingActions() {
  */
 async function mapRefresh(): Promise<void> {
     logger.debug('Map Refresh', state.pos);
-    try {
-        const pos = walker.fuzzedLocation(state.pos);
-        const update = await client.getMapUpdate(pos.lat, pos.lng);
-        apihelper.parseMapUpdate(update);
+    const pos = walker.fuzzedLocation(state.pos);
+    const update = await client.getMapUpdate(pos.lat, pos.lng);
+    apihelper.parseMapUpdate(update);
 
-        state.api.lastMapUpdate = {
-            when: moment(),
-            where: pos,
-        };
+    state.api.lastMapUpdate = {
+        when: moment(),
+        where: pos,
+    };
 
-        await saveState();
+    await saveState();
 
-        socket.sendBuildings();
-        await player.spinBuildings();
+    socket.sendBuildings();
+    await player.spinBuildings();
 
-        await player.catchCreatures();
-
-    } catch (e) {
-        logger.error(e);
-    }
+    await player.catchCreatures();
 }
 
 async function saveState() {

@@ -1,6 +1,5 @@
 import * as logger from 'winston';
 import * as _ from 'lodash';
-import * as fs from 'mz/fs';
 
 import * as database from './data';
 
@@ -39,6 +38,9 @@ export default class APIHelper {
         } else if (response.__type === 'FBagUpdate') {
             if (response.allowedItemsSize) this.state.player.storage.items = response.allowedItemsSize;
             this.state.inventory = response.items;
+        } else if (response.__type === 'FHatchingResult') {
+            this.state.player.avatar = response.avaUpdate;
+            this.state.creatures.push(response.creature);
         } else if (response.__type === 'FUpdate') {
             for (const item of response.items) {
                 if (item.__type === 'FPickItemsResponse') {
@@ -59,6 +61,8 @@ export default class APIHelper {
             this.state.creatures = response.userCreatures;
         } else if (response.__type === 'FCreadex') {
             // nothing to do
+        } else if (response.__type === 'FUserHatchingInfo') {
+            // nothing to do here
         } else {
             logger.warn('Unhandled response: ' + response.__type);
         }
@@ -69,6 +73,7 @@ export default class APIHelper {
     parseMapUpdate(response) {
         if (!response) return;
         if (response.__type === 'FUpdate') {
+            // buildings
             let buildings = [];
             const buildingUpdate = response.items.find(o => o.__type === 'FBuildingUpdate');
             if (buildingUpdate) {
@@ -77,10 +82,26 @@ export default class APIHelper {
                 buildings = _.union.apply(null, buildings);
                 buildings = _.uniqBy(buildings, 'id');
             }
+
+            // avatar
             const avatar = response.items.find(o => o.__type === 'FAvaUpdate');
             this.state.player.avatar = avatar;
             this.state.player.storage.creatures = this.state.player.avatar.creatureStorageSize;
 
+            // eggs
+            const hatchInfo = response.items.find(o => o.__type === 'FHatchedEggs');
+            if (hatchInfo.egg.isHatching) {
+                const egg = hatchInfo.egg;
+                if (egg.passedDistance >= egg.totalDistance) {
+                    // open it in a few
+                    this.state.todo.push({
+                        call: 'open_egg',
+                        incubatorId: [egg.incubatorId],
+                    });
+                }
+            }
+
+            // save state
             this.state.map = {
                 creatures: response.items.find(o => o.__type === 'FCreatureUpdate'),
                 hatched: response.items.find(o => o.__type === 'FHatchedEggs'),
