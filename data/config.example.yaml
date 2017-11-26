@@ -22,6 +22,7 @@ proxy:
   # url: auto
   url: http://localhost:8888
 
+# true to enable ui, go to ui.dracoapi.ml to see it
 ui:
   enabled: true
 

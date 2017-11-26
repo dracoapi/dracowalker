@@ -11,7 +11,7 @@ const geolib = require('geolib');
 import APIHelper from './api';
 
 /**
- * Helper class to deal with our walker.
+ * A player, that catch, spin...
  */
 export default class Player {
     config: any;
@@ -89,7 +89,11 @@ export default class Player {
                 await Bluebird.delay(this.config.delay.spin * _.random(900, 1100));
             } catch (e) {
                 logger.error('Unable to spin');
-                logger.error(e);
+                if (e.details) {
+                    logger.error(e.details);
+                } else {
+                    logger.error(e);
+                }
             }
         }, {concurrency: 1});
     }
@@ -216,7 +220,7 @@ export default class Player {
      * @return {int} distance to target
      */
     distance(target): number {
-        if (!target.latitude && target.coords) target = target.coords;
+        if (!target.lat && !target.latitude && target.coords) target = target.coords;
         return geolib.getDistance(this.state.pos, target, 1, 1);
     }
 }

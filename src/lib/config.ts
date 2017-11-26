@@ -17,6 +17,7 @@ module.exports.load = function() {
             lat: 48.8456222,
             lng: 2.3364526,
         },
+        router: 'stops',
         speed: 5,
         gmapKey: '',
         ui: {

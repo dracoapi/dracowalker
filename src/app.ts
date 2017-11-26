@@ -121,7 +121,7 @@ async function main() {
 async function updatePos() {
     try {
         const path = await walker.checkPath();
-        if (path) socket.sendRoute(path.waypoints);
+        if (path) socket.sendRoute(path);
 
         await walker.walk();
         socket.sendPosition();

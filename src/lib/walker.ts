@@ -1,7 +1,8 @@
-import * as _ from 'lodash';
 import * as Bluebird from 'bluebird';
 import * as logger from 'winston';
-import * as DracoNode from 'draconode';
+import { IRouter } from './router/IRouter';
+import StopRouter from './router/StopRouter';
+import StadStillRouter from './router/StandStillRouter';
 
 const GoogleMapsAPI = require('googlemaps');
 const geolib = require('geolib');
@@ -17,6 +18,7 @@ export default class Walker {
     config: any;
     state: any;
     apihelper: APIHelper;
+    router: IRouter;
 
     /**
      * @constructor
@@ -27,61 +29,13 @@ export default class Walker {
         this.config = config;
         this.state = state;
         this.apihelper = new APIHelper(config, state);
-    }
-
-    /**
-     * Find our next building to go to. We take the nearest we did not visited yet.
-     * @return {object} next building to go to
-     */
-    findNextBuilding(): any {
-        if (!this.state.map) return null;
-
-        // get stop builing not already visited or in cooldown
-        let buildings: any[] = this.state.map.buildings;
-        buildings = buildings.filter(b => b.type === DracoNode.enums.BuildingType.STOP &&
-                                          b.available && b.pitstop && !b.pitstop.cooldown &&
-                                          this.state.path.visited.indexOf(b.id) < 0);
-
-        if (buildings.length > 1) {
-            // order by distance
-            _.each(buildings, pk => pk.distance = this.distance(pk));
-            buildings = _.orderBy(buildings, 'distance');
-        }
-
-        // take closest
-        if (buildings.length > 0) return buildings[0];
-        else return null;
-    }
-
-    /**
-     * Use Google Map API to get a path to nearest building.
-     * Update state with path.
-     * @return {Promise<any>}
-     */
-    async generatePath(): Promise<any> {
-        logger.debug('Get new path.');
-
-        const state = this.state;
-        let target = state.path.target = this.findNextBuilding();
-
-        if (target) {
-            const gmAPI = new GoogleMapsAPI({
-                key: this.config.gmapKey,
-            });
-            if (target.coords) target = target.coords;
-            const result = await gmAPI.directionsAsync({origin: `${state.pos.lat},${state.pos.lng}`, destination: `${target.latitude},${target.longitude}`, mode: 'walking'});
-            if (result.error_message) throw new Error(result.error_message);
-            state.path.waypoints = [];
-            if (result.routes.length > 0 && result.routes[0].legs) {
-                _.each(<any[]>result.routes[0].legs, l => {
-                    _.each(<any[]>l.steps, s => state.path.waypoints.push(s.end_location));
-                });
-            }
-            state.path.waypoints.push({lat: target.latitude, lng: target.longitude});
-            return state.path;
+        if (config.router === 'stops') {
+            this.router = new StopRouter(config, state);
+        } else if (config.router === 'stand') {
+            this.router = new StadStillRouter(config, state);
         } else {
-            logger.warn('No stop to go to, stand still.');
-            return null;
+            logger.warn(`Unknown router '${this.router}', using 'stops`);
+            this.router = new StopRouter(config, state);
         }
     }
 
@@ -91,15 +45,7 @@ export default class Walker {
      * @return {Promise<any>}
      */
     async checkPath() {
-        if (this.state.path.waypoints.length === 0) {
-            if (this.state.path.target) {
-                // we arrive at target
-                this.state.path.visited.push(this.state.path.target.id);
-            }
-            // get a new target and path to go there
-            return await this.generatePath();
-        }
-        return null;
+        return this.router.checkPath();
     }
 
     /**
