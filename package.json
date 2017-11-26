@@ -16,7 +16,7 @@
     "dotenv": "^4.0.0",
     "draconode": "0.1.0",
     "dracotext": "0.0.4",
-    "fastify": "^0.31.0",
+    "fastify": "^0.35.2",
     "geolib": "^2.0.24",
     "googlemaps": "^1.12.0",
     "js-yaml": "^3.10.0",
