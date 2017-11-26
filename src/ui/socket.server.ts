@@ -161,11 +161,11 @@ export default class SocketServer {
     }
 
     /**
-     * Send player stats  to a client after it request it
+     * Send player stats to a client after it request it
      * @param {object} client - the socket client to send info to
      */
     sendPlayerStats(client) {
-        if (this.state.inventory) {
+        if (this.state.player) {
             client.emit('player_stats', this.state.player);
         }
     }

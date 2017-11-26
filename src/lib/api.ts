@@ -31,6 +31,7 @@ export default class APIHelper {
             this.state.api.config = response.config;
             if (this.config.speed === 'auto') {
                 this.config.speed = 0.9 * response.config.avatarMoveRunSpeed;
+                logger.debug(`Auto speed set to ${this.config.speed.toFixed(1)} km/h`);
             }
             this.state.player.id = response.info.userId;
             this.state.player.nickname = response.info.nickname;
@@ -56,6 +57,8 @@ export default class APIHelper {
             this.state.player.avatar = response.avaUpdate;
         } else if (response.__type === 'FUserCreaturesList') {
             this.state.creatures = response.userCreatures;
+        } else if (response.__type === 'FCreadex') {
+            // nothing to do
         } else {
             logger.warn('Unhandled response: ' + response.__type);
         }

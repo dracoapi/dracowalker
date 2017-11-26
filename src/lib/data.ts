@@ -8,7 +8,7 @@ export async function save(type: string, object: any) {
         await db.update({ type, 'object.id': object.id }, {
             type,
             object,
-        }, { upsert: true })
+        }, { upsert: true });
     } catch (e) {
         logger.error('Error saving data to local db.');
         logger.error(e);

@@ -1,9 +1,8 @@
 # User credentials
 credentials:
   # DEVICE or GOOGLE
-  type: GOOGLE
+  login: GOOGLE
   deviceId: 'aaa-aaa'
-  userId: 'aaaa-bbb-ccc'
   username: 'username'
   password: 'password'
 

@@ -34,9 +34,10 @@ export default class Walker {
      * @return {object} next building to go to
      */
     findNextBuilding(): any {
-        let buildings: any[] = this.state.map.buildings;
+        if (!this.state.map) return null;
 
         // get stop builing not already visited or in cooldown
+        let buildings: any[] = this.state.map.buildings;
         buildings = buildings.filter(b => b.type === DracoNode.enums.BuildingType.STOP &&
                                           b.available && b.pitstop && !b.pitstop.cooldown &&
                                           this.state.path.visited.indexOf(b.id) < 0);
@@ -68,7 +69,7 @@ export default class Walker {
                 key: this.config.gmapKey,
             });
             if (target.coords) target = target.coords;
-            const result = await gmAPI.directionsAsync({origin: `${state.pos.lat},${state.pos.lng}`, destination: `${target.latitude},${target.longitude}`, mode: 'walking'})
+            const result = await gmAPI.directionsAsync({origin: `${state.pos.lat},${state.pos.lng}`, destination: `${target.latitude},${target.longitude}`, mode: 'walking'});
             if (result.error_message) throw new Error(result.error_message);
             state.path.waypoints = [];
             if (result.routes.length > 0 && result.routes[0].legs) {
