@@ -129,10 +129,9 @@ export default class Player {
                 logger.debug('Try catching a wild ' + name);
 
                 await client.encounter(creature.id);
-                let response;
-                let caught = false;
+                let response: any = {};
                 let tries = 3;
-                while (!caught && (tries-- > 0)) {
+                while (!response.caught && !response.runAway && (tries-- > 0)) {
                     const ball = this.getThrowBall();
                     if (ball < 0) {
                         logger.warn('No more ball to throw.');
@@ -141,14 +140,13 @@ export default class Player {
                     await client.delay(this.config.delay.encouter * _.random(900, 1100));
                     response = await client.catch(creature.id,
                                                   ball,
-                                                  0, // 0.5 + Math.random() * 0.5,
+                                                  0.5 + Math.random() * 0.5,
                                                   Math.random() >= 0.5);
                     this.apihelper.parse(response);
                     this.state.inventory.find(i => i.type === ball).count--;
-                    caught = response.caught;
                 }
 
-                if (caught) {
+                if (response.caught) {
                     logger.info(`${name} caught!`);
                     const creature = response.userCreature;
                     creature.display = name;
