@@ -91,11 +91,11 @@ async function main() {
 
     } catch (e) {
         if (e.message === 'Invalid proxy.' ||
-            (e.name === 'StatusCodeError' && e.statusCode === 403) ||
+            (e.name === 'StatusCodeError' && e.statusCode === 403) || // ip banned
             e.message.indexOf('tunneling socket could not be established') > 0 ||
             e.message.indexOf('ECONNRESET') >= 0 || // connection reset
             e.message.indexOf('ECONNREFUSED ') >= 0 || // connection refused
-            e.message.indexOf('403') >= 0) {// ip banned?
+            e.message.indexOf('403') >= 0) { // ip banned?
             logger.error('Bad proxy');
             proxyhelper.badProxy();
         } else {

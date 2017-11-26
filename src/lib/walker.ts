@@ -69,7 +69,7 @@ export default class Walker {
                 key: this.config.gmapKey,
             });
             if (target.coords) target = target.coords;
-            const result = await gmAPI.directionsAsync({origin: `${state.pos.lat},${state.pos.lng}`, destination: `${target.latitude},${target.longitude}`, mode: 'walking'})
+            const result = await gmAPI.directionsAsync({origin: `${state.pos.lat},${state.pos.lng}`, destination: `${target.latitude},${target.longitude}`, mode: 'walking'});
             if (result.error_message) throw new Error(result.error_message);
             state.path.waypoints = [];
             if (result.routes.length > 0 && result.routes[0].legs) {
