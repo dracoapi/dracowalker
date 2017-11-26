@@ -197,7 +197,7 @@ export default class Player {
         if (freeIncub.length > 0 && eggs.length > 0) {
             logger.debug('Dispatch incubators');
             const client: DracoNode.Client = this.state.client;
-            eggs = _.orderBy(eggs, 'totalDistance', 'desc');
+            eggs = _.orderBy(eggs, 'totalDistance', 'asc');
             freeIncub = _.orderBy(freeIncub, 'usagesLeft', 'desc');
             const max = Math.min(eggs.length, freeIncub.length);
             for (let i = 0; i < max; i++) {
