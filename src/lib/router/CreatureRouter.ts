@@ -40,10 +40,11 @@ export default class CreatureRouter extends IRouter {
     async findNextTarget() {
         if (!this.state.map) return null;
 
-        let wilds: any[] = this.state.map.creatures.wilds;
-        //wilds = wilds.filter(b => b.caughtQuantity == 0);
-        //logger.info(wilds.length);
 
+        //todo - query wilds and inRadar look for catchQuantity == 0
+
+        let wilds: any[] = this.state.map.creatures.wilds;
+  
         if (wilds.length > 1) {
             // order by distance
             _.each(wilds, pk => pk.distance = this.distance(pk));
@@ -59,17 +60,29 @@ export default class CreatureRouter extends IRouter {
             });
         }
 
-        // if no wilds, go to stops
+        // if no wilds, go to radar
+        let inradar: any[] = this.state.map.creatures.inRadar;
+
+        if (inradar.length > 1) {
+            // order by distance
+            _.each(inradar, pk => pk.distance = this.distance(pk));
+            inradar = _.orderBy(inradar, 'distance');
+        }
+
+        // take closest
+        if (inradar.length > 0) {
+            return new Target({
+                id: inradar[0].id,
+                lat: inradar[0].coords.latitude,
+                lng: inradar[0].coords.longitude,
+            });
+        }
+
+        //if no radar, go to stops
         let buildings: any[] = this.state.map.buildings;
         buildings = buildings.filter(b => b.type === DracoNode.enums.BuildingType.STOP &&
             b.available && b.pitstop && !b.pitstop.cooldown &&
             this.state.path.visited.indexOf(b.id) < 0);
-    
-        //if (buildings.length > 1) {
-        //    // order by further distance to get to new area
-        //    _.each(buildings, pk => pk.distance = this.distance(pk));
-        //    buildings = _.orderBy(buildings, 'distance', 'desc');
-        //}
 
         if (buildings.length > 0)
         {
