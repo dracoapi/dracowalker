@@ -1,11 +1,9 @@
 import * as _ from 'lodash';
 import * as logger from 'winston';
 import * as DracoNode from 'draconode';
-import { IRouter, Target } from './IRouter';
+import { BaseRouter, Target } from './BaseRouter';
 
-const geolib = require('geolib');
-
-export default class StopRouter extends IRouter {
+export default class StopRouter extends BaseRouter {
     async checkPath(): Promise<Target[]> {
         if (this.state.path.waypoints.length === 0) {
             if (this.state.path.target) {
@@ -62,15 +60,5 @@ export default class StopRouter extends IRouter {
         } else {
             return null;
         }
-    }
-
-    /**
-     * Calculte distance from current pos to a target.
-     * @param {object} target position
-     * @return {int} distance to target
-     */
-    distance(target): number {
-        if (!target.lat && !target.latitude && target.coords) target = target.coords;
-        return geolib.getDistance(this.state.pos, target, 1, 1);
     }
 }

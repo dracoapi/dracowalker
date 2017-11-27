@@ -24,8 +24,8 @@ module.exports.load = function() {
             enabled: false,
         },
         behavior: {
-            walk: true,
-            catch: false,
+            catch: true,
+            followroads: true,
             autorelease: true,
         },
         inventory: {

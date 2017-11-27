@@ -1,6 +1,6 @@
 import * as Bluebird from 'bluebird';
 import * as logger from 'winston';
-import { IRouter } from './router/IRouter';
+import { BaseRouter } from './router/BaseRouter';
 import StopRouter from './router/StopRouter';
 import StadStillRouter from './router/StandStillRouter';
 import CreatureRouter from './router/CreatureRouter';
@@ -19,7 +19,7 @@ export default class Walker {
     config: any;
     state: any;
     apihelper: APIHelper;
-    router: IRouter;
+    router: BaseRouter;
 
     /**
      * @constructor
@@ -34,7 +34,7 @@ export default class Walker {
             this.router = new StopRouter(config, state);
         } else if (config.router === 'stand') {
             this.router = new StadStillRouter(config, state);
-        } else if (config.router === 'creature') {
+        } else if (config.router === 'creatures') {
             this.router = new CreatureRouter(config, state);
         } else {
             logger.warn(`Unknown router '${this.router}', using 'stops`);

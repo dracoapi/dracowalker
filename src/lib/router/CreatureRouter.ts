@@ -1,11 +1,9 @@
 import * as _ from 'lodash';
 import * as logger from 'winston';
 import * as DracoNode from 'draconode';
-import { IRouter, Target } from './IRouter';
+import { BaseRouter, Target } from './BaseRouter';
 
-const geolib = require('geolib');
-
-export default class CreatureRouter extends IRouter {
+export default class CreatureRouter extends BaseRouter {
     async checkPath(): Promise<Target[]> {
         if (this.state.path.waypoints.length === 0) {
             if (this.state.path.target) {
@@ -40,11 +38,11 @@ export default class CreatureRouter extends IRouter {
     async findNextTarget() {
         if (!this.state.map) return null;
 
-
-        //todo - query wilds and inRadar look for catchQuantity == 0
+        // todo - query wilds and inRadar look for catchQuantity == 0
+        // todo, if not enough ball, try to spin stop
 
         let wilds: any[] = this.state.map.creatures.wilds;
-  
+
         if (wilds.length > 1) {
             // order by distance
             _.each(wilds, pk => pk.distance = this.distance(pk));
@@ -78,32 +76,24 @@ export default class CreatureRouter extends IRouter {
             });
         }
 
-        //if no radar, go to stops
+        // if no radar, find a stop to spin
+        return this.findClosestStop();
+    }
+
+    findClosestStop() {
         let buildings: any[] = this.state.map.buildings;
         buildings = buildings.filter(b => b.type === DracoNode.enums.BuildingType.STOP &&
             b.available && b.pitstop && !b.pitstop.cooldown &&
             this.state.path.visited.indexOf(b.id) < 0);
 
-        if (buildings.length > 0)
-        {
+        if (buildings.length > 0) {
             return new Target({
                 id: buildings[0].id,
                 lat: buildings[0].coords.latitude,
                 lng: buildings[0].coords.longitude,
             });
         }
-        else {
-            return null;
-        }
-    }
 
-    /**
-     * Calculte distance from current pos to a target.
-     * @param {object} target position
-     * @return {int} distance to target
-     */
-    distance(target): number {
-        if (!target.lat && !target.latitude && target.coords) target = target.coords;
-        return geolib.getDistance(this.state.pos, target, 1, 1);
+        return null;
     }
 }

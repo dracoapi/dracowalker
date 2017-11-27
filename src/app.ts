@@ -199,7 +199,9 @@ async function mapRefresh(): Promise<void> {
     socket.sendBuildings();
     await player.spinBuildings();
 
-    await player.catchCreatures();
+    if (config.behavior.catch) {
+        await player.catchCreatures();
+    }
 }
 
 async function saveState() {

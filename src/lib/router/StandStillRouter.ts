@@ -1,6 +1,6 @@
-import { IRouter } from './IRouter';
+import { BaseRouter } from './BaseRouter';
 
-export default class StopRouter extends IRouter {
+export default class StopRouter extends BaseRouter {
     checkPath() {
         return null;
     }
