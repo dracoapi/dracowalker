@@ -99,18 +99,18 @@ export default class Player {
     }
 
     getThrowBall() {
-        const haveSimple = this.state.inventory.some(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_SIMPLE);
-        if (haveSimple) {
+        const simple = this.state.inventory.find(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_SIMPLE);
+        if (simple && simple.count > 0) {
             return DracoNode.enums.ItemType.MAGIC_BALL_SIMPLE;
         }
 
-        const haveNormal = this.state.inventory.some(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_NORMAL);
-        if (haveNormal) {
+        const normal = this.state.inventory.find(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_NORMAL);
+        if (normal && normal.count > 0) {
             return DracoNode.enums.ItemType.MAGIC_BALL_NORMAL;
         }
 
-        const haveGood = this.state.inventory.some(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_GOOD);
-        if (haveGood) {
+        const good = this.state.inventory.find(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_GOOD);
+        if (good && good.count > 0) {
             return DracoNode.enums.ItemType.MAGIC_BALL_GOOD;
         }
 
