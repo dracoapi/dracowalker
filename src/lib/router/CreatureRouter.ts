@@ -1,29 +1,18 @@
 import * as _ from 'lodash';
-import * as logger from 'winston';
 import * as DracoNode from 'draconode';
 import { BaseRouter, Target } from './BaseRouter';
 
 export default class CreatureRouter extends BaseRouter {
     async checkPath(): Promise<Target[]> {
-        if (this.state.path.waypoints.length === 0) {
-            if (this.state.path.target) {
-                // we arrive at target
-                this.state.path.visited.push(this.state.path.target.id);
-            }
-            // get a new target and path to go there
-            return await this.generatePath();
-        }
-        // do nothing
-        return null;
+        // generate a new path at each update to always get the closest creature
+        return await this.generatePath();
     }
 
     async generatePath() {
-        logger.debug('Get new path.');
-
         const state = this.state;
-        const target = state.path.target = await this.findNextTarget();
-
-        if (target) {
+        const target = await this.findNextTarget();
+        if (target && (!state.path.target || target.lat !== state.path.target.lat || target.lng !== state.path.target.lng)) {
+            state.path.target = target;
             if (this.distance(target) > 10) {
                 await this.generateWaypoint(target);
             } else {
@@ -38,46 +27,37 @@ export default class CreatureRouter extends BaseRouter {
     async findNextTarget() {
         if (!this.state.map) return null;
 
-        // todo - query wilds and inRadar look for catchQuantity == 0
-        // todo, if not enough ball, try to spin stop
+        const balls =  this.state.inventory.filter(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_SIMPLE ||
+                                                        x.type === DracoNode.enums.ItemType.MAGIC_BALL_NORMAL ||
+                                                        x.type === DracoNode.enums.ItemType.MAGIC_BALL_GOOD);
+        const ballCount = _.reduce(balls, (sum, i) => sum + i.count, 0);
 
-        let wilds: any[] = this.state.map.creatures.wilds;
-
-        if (wilds.length > 1) {
-            // order by distance
-            _.each(wilds, pk => pk.distance = this.distance(pk));
-            wilds = _.orderBy(wilds, 'distance');
+        // if enough balls, find a creature
+        if (ballCount > 5) {
+            const creature = this.findClosestCreature();
+            if (creature) return creature;
         }
 
-        // take closest
-        if (wilds.length > 0) {
-            return new Target({
-                id: wilds[0].id,
-                lat: wilds[0].coords.latitude,
-                lng: wilds[0].coords.longitude,
-            });
-        }
-
-        // if no wilds, go to radar
-        let inradar: any[] = this.state.map.creatures.inRadar;
-
-        if (inradar.length > 1) {
-            // order by distance
-            _.each(inradar, pk => pk.distance = this.distance(pk));
-            inradar = _.orderBy(inradar, 'distance');
-        }
-
-        // take closest
-        if (inradar.length > 0) {
-            return new Target({
-                id: inradar[0].id,
-                lat: inradar[0].coords.latitude,
-                lng: inradar[0].coords.longitude,
-            });
-        }
-
-        // if no radar, find a stop to spin
+        // if no creature around or no balls to throw, find a stop to spin
         return this.findClosestStop();
+    }
+
+    findClosestCreature() {
+        let allCreatures = this.state.map.creatures.wilds.concat(this.state.map.creatures.inRadar);
+        allCreatures = _.uniqBy(allCreatures, 'id');
+        if (allCreatures.length > 0) {
+            for (const creature of allCreatures) {
+                creature.distance = this.distance(creature);
+            }
+            allCreatures = _.orderBy(allCreatures, 'distance', 'asc');
+            // take closest
+            return new Target({
+                id: allCreatures[0].id,
+                lat: allCreatures[0].coords.latitude,
+                lng: allCreatures[0].coords.longitude,
+            });
+        }
+        return null;
     }
 
     findClosestStop() {
@@ -85,6 +65,12 @@ export default class CreatureRouter extends BaseRouter {
         buildings = buildings.filter(b => b.type === DracoNode.enums.BuildingType.STOP &&
             b.available && b.pitstop && !b.pitstop.cooldown &&
             this.state.path.visited.indexOf(b.id) < 0);
+
+        if (buildings.length > 1) {
+            // order by distance
+            _.each(buildings, pk => pk.distance = this.distance(pk));
+            buildings = _.orderBy(buildings, 'distance', 'asc');
+        }
 
         if (buildings.length > 0) {
             return new Target({

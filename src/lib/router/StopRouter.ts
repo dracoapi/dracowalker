@@ -47,7 +47,7 @@ export default class StopRouter extends BaseRouter {
         if (buildings.length > 1) {
             // order by distance
             _.each(buildings, pk => pk.distance = this.distance(pk));
-            buildings = _.orderBy(buildings, 'distance');
+            buildings = _.orderBy(buildings, 'distance', 'asc');
         }
 
         // take closest
