@@ -98,7 +98,14 @@ async function main() {
 
         // check incubators every 5 min
         player.dispatchIncubators();
-        setTimeout(() => player.dispatchIncubators(), 5 * 60 * 1000);
+        setTimeout(async () => {
+            try {
+                await player.dispatchIncubators();
+            } catch (e) {
+                logger.error(e);
+                if (e.details) logger.error(e.details);
+            }
+        }, 5 * 60 * 1000);
 
     } catch (e) {
         if (e.message === 'Invalid proxy.' ||
