@@ -193,7 +193,7 @@ export default class Player {
     async dispatchIncubators() {
         const hatchInfo = await this.getHatchingInfo();
         let freeIncub = hatchInfo.incubators.filter(i => i.eggId === null);
-        let eggs = hatchInfo.eggs.filter(e => e.incubatorId === null);
+        let eggs = hatchInfo.eggs.filter(e => e.incubatorId === null && !e.isEggForRoost);
         if (freeIncub.length > 0 && eggs.length > 0) {
             logger.debug('Dispatch incubators');
             const client: DracoNode.Client = this.state.client;

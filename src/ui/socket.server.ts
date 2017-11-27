@@ -139,9 +139,16 @@ export default class SocketServer {
      */
     async sendCreatures(client) {
         const creatures = await this.player.getCreatures();
+        for (const creature of creatures) {
+            creature.evolutions = {};
+            creature.possibleEvolutions.forEach((v, k) => { creature.evolutions[v] = k; });
+        }
+        const candies = {};
+        this.state.player.avatar.candies.forEach((v, k) => { candies[k] = v; });
         client.emit('creature_list', {
             creatures,
-            candy: [],
+            candies,
+            dust: this.state.player.avatar.dust,
         });
     }
 
