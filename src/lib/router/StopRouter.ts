@@ -24,11 +24,7 @@ export default class StopRouter extends BaseRouter {
         const target = state.path.target = await this.findNextTarget();
 
         if (target) {
-            if (this.distance(target) > 10) {
-                await this.generateWaypoint(target);
-            } else {
-                state.path.waypoints = [target];
-            }
+            await this.generateWaypoint(target);
             return state.path.waypoints;
         }
 

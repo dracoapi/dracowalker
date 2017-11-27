@@ -13,11 +13,7 @@ export default class CreatureRouter extends BaseRouter {
         const target = await this.findNextTarget();
         if (target && (!state.path.target || target.lat !== state.path.target.lat || target.lng !== state.path.target.lng)) {
             state.path.target = target;
-            if (this.distance(target) > 10) {
-                await this.generateWaypoint(target);
-            } else {
-                state.path.waypoints = [target];
-            }
+            await this.generateWaypoint(target);
             return state.path.waypoints;
         }
 
