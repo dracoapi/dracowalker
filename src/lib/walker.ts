@@ -3,6 +3,7 @@ import * as logger from 'winston';
 import { IRouter } from './router/IRouter';
 import StopRouter from './router/StopRouter';
 import StadStillRouter from './router/StandStillRouter';
+import CreatureRouter from './router/CreatureRouter';
 
 const GoogleMapsAPI = require('googlemaps');
 const geolib = require('geolib');
@@ -33,6 +34,8 @@ export default class Walker {
             this.router = new StopRouter(config, state);
         } else if (config.router === 'stand') {
             this.router = new StadStillRouter(config, state);
+        } else if (config.router === 'creature') {
+            this.router = new CreatureRouter(config, state);
         } else {
             logger.warn(`Unknown router '${this.router}', using 'stops`);
             this.router = new StopRouter(config, state);
