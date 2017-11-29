@@ -98,7 +98,7 @@ async function main() {
 
         // check incubators every 5 min
         player.dispatchIncubators();
-        setTimeout(async () => {
+        setInterval(async () => {
             try {
                 await player.dispatchIncubators();
             } catch (e) {
