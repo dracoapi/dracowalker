@@ -69,8 +69,9 @@ async function main() {
 
         logger.debug('Login...');
         let response = await client.login();
-        apihelper.parse(response);
         if (!response) throw new Error('Unable to login');
+        apihelper.parse(response);
+        const newLicence = response.info.newLicense;
 
         logger.debug('Load...');
         await client.load();
@@ -90,6 +91,12 @@ async function main() {
 
         await mapRefresh();
         socket.ready();
+
+        await apihelper.startingEvents();
+        
+        if (newLicence > 0) {
+            await client.acceptLicence(newLicence);
+        }
 
         await saveState();
 

@@ -1,6 +1,7 @@
 import * as logger from 'winston';
 import * as _ from 'lodash';
 
+import * as DracoNode from 'draconode';
 import * as database from './data';
 
 /**
@@ -116,5 +117,13 @@ export default class APIHelper {
                 }
             }
         }
+    }
+
+    async startingEvents() {
+        const client: DracoNode.Client = this.state.client;
+        for (let i = 0; i < 21; i++) {
+            await client.event('LoadingScreenPercent', '100');
+        }
+        await client.event('DestroyLoadingScreen');
     }
 }
