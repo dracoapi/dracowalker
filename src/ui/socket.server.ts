@@ -45,12 +45,13 @@ export default class SocketServer {
             socket.on('eggs_list', () => this.sendEggs(socket));
             socket.on('player_stats', () => this.sendPlayerStats(socket));
             socket.on('transfer_creature', msg => this.transferCreature(socket, msg));
-            socket.on('evolve_pokemon', msg => this.evolvePokemon(socket, msg));
             socket.on('drop_items', msg => this.dropItems(socket, msg));
+            socket.on('evolve_creature', msg => this.evolveCreature(socket, msg));
         });
 
-        app.listen(8000);
-        logger.debug('Socket server listening at 8000');
+        const port = this.config.ui.port || 8000;
+        app.listen(port);
+        logger.debug('Socket server listening at ' + port);
     }
 
     /**
@@ -194,11 +195,6 @@ export default class SocketServer {
         }
     }
 
-    /**
-     * Evolve a pokemon after the client request it
-     * @param {object} client - the socket client to send info to if needed
-     * @param {object} msg - message send from the ui
-     */
     dropItems(client, msg) {
         this.state.todo.push({
             call: 'drop_items',
@@ -207,15 +203,10 @@ export default class SocketServer {
         });
     }
 
-    /**
-     * Drop items after the client request it
-     * @param {object} client - the socket client to send info to if needed
-     * @param {object} msg - message send from the ui
-     */
-    evolvePokemon(client, msg) {
+    evolveCreature(client, msg) {
         this.state.todo.push({
-            call: 'evolve_pokemon',
-            pokemon: msg.id,
+            call: 'evolve_creature',
+            creature: msg.id,
         });
     }
 }

@@ -93,7 +93,7 @@ async function main() {
         socket.ready();
 
         await apihelper.startingEvents();
-        
+
         if (newLicence > 0) {
             await client.acceptLicence(newLicence);
         }
