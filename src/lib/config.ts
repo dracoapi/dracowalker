@@ -21,7 +21,7 @@ module.exports.load = function() {
         speed: 5,
         gmapKey: '',
         ui: {
-            enabled: false,
+            enabled: true,
         },
         behavior: {
             catch: true,
