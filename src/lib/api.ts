@@ -46,6 +46,10 @@ export default class APIHelper {
             for (const item of response.items) {
                 if (item.__type === 'FPickItemsResponse') {
                     // logger.debug('Loot', item);
+                } else if (item.__type === 'FTransferMonsterToCandiesResponse') {
+                    // logger.debug('Loot', item.loot);
+                } else if (item.__type === 'FAvaUpdate') {
+                    this.state.player.avatar = item;
                 } else if (item.__type === 'FBuilding') {
                     const building = this.state.map.buildings.find(b => b.id === item.id);
                     if (building) {
@@ -60,6 +64,10 @@ export default class APIHelper {
             this.state.player.avatar = response.avaUpdate;
         } else if (response.__type === 'FUserCreaturesList') {
             this.state.creatures = response.userCreatures;
+        } else if (response.__type === 'FUserCreatureUpdate') {
+            this.state.player.avatar = response.avaUpdate;
+            this.state.creatures = this.state.creatures.filter(c => c.id !== response.creature.id);
+            this.state.creatures.push(response.creature);
         } else if (response.__type === 'FCreadex') {
             // nothing to do
         } else if (response.__type === 'FUserHatchingInfo') {

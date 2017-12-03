@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import * as fs from 'mz/fs';
 import * as moment from 'moment';
 import * as Bluebird from 'bluebird';
+import * as dracoText from 'dracotext';
 
 import APIHelper from './lib/api';
 import ProxyHelper from './lib/proxy';
@@ -13,6 +14,7 @@ import Walker from './lib/walker';
 import Player from './lib/player';
 import SocketServer from './ui/socket.server';
 
+const strings = dracoText.load('english');
 const config = require('./lib/config').load();
 
 if (!config.credentials.deviceId) {
@@ -168,6 +170,10 @@ async function handlePendingActions() {
             await Bluebird.delay(config.delay.release * _.random(900, 1100));
 
         } else if (todo.call === 'evolve_creature') {
+            const response = await client.evolve(todo.creature, todo.to);
+            apihelper.parse(response);
+            response.creature.display = strings.getCreature(DracoNode.enums.CreatureType[response.creature.name]);
+            logger.info('Creature evolve to ' + response.creature.display);
             await Bluebird.delay(config.delay.evolve * _.random(900, 1100));
 
         } else if (todo.call === 'drop_items') {
@@ -205,6 +211,8 @@ async function mapRefresh(): Promise<void> {
 
     socket.sendBuildings();
     await player.spinBuildings();
+
+    await player.openChests();
 
     if (config.behavior.catch) {
         await player.catchCreatures();

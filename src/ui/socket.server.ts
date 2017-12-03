@@ -207,6 +207,7 @@ export default class SocketServer {
         this.state.todo.push({
             call: 'evolve_creature',
             creature: msg.id,
+            to: msg.to,
         });
     }
 }

@@ -84,7 +84,7 @@ export default class Player {
 
                 this.state.socket.sendVisiteBuilding(info.building);
 
-                logger.info('Building spinned');
+                logger.info('Building spun!');
 
                 await Bluebird.delay(this.config.delay.spin * _.random(900, 1100));
             } catch (e) {
@@ -156,13 +156,35 @@ export default class Player {
                     creature.display = name;
                     creature.ball = response.ballType;
                     this.state.socket.sendCreatureCaught(creature);
-                    if (this.state.creatures) {
+                    const release = this.autoReleaseCreature(creature);
+                    if (this.state.creatures && !release) {
                         this.state.creatures.push(creature);
                     }
                 }
 
                 await Bluebird.delay(this.config.delay.catch * _.random(900, 1100));
             }
+        }
+    }
+
+    async autoReleaseCreature(creature) {
+        if (!this.config.behavior.autorelease) return;
+
+        const creatures: any[] = this.state.creatures;
+        const better = creatures.find(c =>
+            c.name === creature.name &&
+            (c.attackValue + c.staminaValue) > (creature.attackValue + creature.staminaValue) &&
+            c.cp > creature.cp
+        );
+        if (better) {
+            await Bluebird.delay(this.config.delay.release * _.random(900, 1100));
+            const client: DracoNode.Client = this.state.client;
+            const response = await client.releaseCreatures([ creature.id ]);
+            this.apihelper.parse(response);
+            logger.info(`${creature.display} released.`);
+            return response;
+        } else {
+            return null;
         }
     }
 
@@ -212,6 +234,15 @@ export default class Player {
         const response = await client.getHatchingInfo();
         this.apihelper.parse(response);
         return response;
+    }
+
+    async openChests() {
+        const client: DracoNode.Client = this.state.client;
+        for (const update of this.state.map.chests.chests) {
+            for (const chest of update.chests) {
+                logger.info('Chest in gmo', chest);
+            }
+        }
     }
 
     /**
