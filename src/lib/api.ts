@@ -114,7 +114,7 @@ export default class APIHelper {
             this.state.map = {
                 creatures: response.items.find(o => o.__type === 'FCreatureUpdate'),
                 hatched: response.items.find(o => o.__type === 'FHatchedEggs'),
-                chests: response.items.find(o => o.__type === 'FChestUpdate'),
+                chests: response.items.find(o => o.__type === 'FChestUpdate').chests,
                 buildings,
             };
 
