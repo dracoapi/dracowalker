@@ -237,14 +237,10 @@ export default class Player {
     }
 
     async openChests() {
-        try {
-            // const client: DracoNode.Client = this.state.client;
-            for (const chest of this.state.map.chests) {
-                logger.info('Chest in gmo', chest);
-            }
-        } catch (e) {
-            logger.error(e);
-            logger.error(JSON.stringify(this.state.map.chests));
+        const client: DracoNode.Client = this.state.client;
+        for (const chest of this.state.map.chests) {
+            const response = await client.openChest(chest);
+            this.apihelper.parse(response);
         }
     }
 
