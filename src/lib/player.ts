@@ -241,6 +241,7 @@ export default class Player {
         for (const chest of this.state.map.chests) {
             const response = await client.openChest(chest);
             this.apihelper.parse(response);
+            logger.info('Chest found!');
         }
     }
 
