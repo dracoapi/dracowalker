@@ -12,6 +12,7 @@ Need up to date [node](https://nodejs.org) and [typescript](https://typescriptla
 
 ```
 git clone https://github.com/dracoapi/dracowalker.git
+cd dracowalker
 npm i
 tsc
 node ./bin/app.js
