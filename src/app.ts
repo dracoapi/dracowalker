@@ -39,10 +39,10 @@ const state: any = {
     todo: [],
 };
 
-const apihelper = new APIHelper(config, state);
-const walker = new Walker(config, state);
-const player = new Player(config, state);
 const proxyhelper = new ProxyHelper(config, state);
+const apihelper = new APIHelper(config, state);
+const player = new Player(config, state);
+const walker = state.walker = new Walker(config, state);
 const socket = state.socket = new SocketServer(config, state);
 
 let client: DracoNode.Client;
@@ -225,6 +225,7 @@ async function saveState() {
     const lightstate = _.cloneDeep(state);
     delete lightstate.client;
     delete lightstate.socket;
+    delete lightstate.walker;
     await fs.writeFile('data/state.json', JSON.stringify(lightstate, null, 2));
 }
 

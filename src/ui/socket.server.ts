@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as fastify from 'fastify';
 
 import Player from '../lib/player';
+import GoThereRouter from '../lib/router/GoThereRouter';
 
 /**
  * Socket server to communicate to the web ui through socket.io
@@ -47,6 +48,7 @@ export default class SocketServer {
             socket.on('transfer_creature', msg => this.transferCreature(socket, msg));
             socket.on('drop_items', msg => this.dropItems(socket, msg));
             socket.on('evolve_creature', msg => this.evolveCreature(socket, msg));
+            socket.on('set_destination', msg => this.setDestination(msg));
         });
 
         const port = this.config.ui.port || 8000;
@@ -209,5 +211,11 @@ export default class SocketServer {
             creature: msg.id,
             to: msg.to,
         });
+    }
+
+    setDestination(latlng): any {
+        logger.info('Go to manual location', latlng);
+        this.state.path.waypoints = [];
+        this.state.walker.router = new GoThereRouter(this.config, this.state, latlng, this.state.walker.router);
     }
 }
