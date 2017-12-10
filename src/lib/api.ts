@@ -68,7 +68,7 @@ export default class APIHelper {
             this.state.player.avatar = response.avaUpdate;
             this.state.creatures = this.state.creatures.filter(c => c.id !== response.creature.id);
             this.state.creatures.push(response.creature);
-        } else if (response.__type === 'FOpenChestResult ') {
+        } else if (response.__type === 'FOpenChestResult') {
             // nothing
         } else if (response.__type === 'FCreadex') {
             // nothing to do
