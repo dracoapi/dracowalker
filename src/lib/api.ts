@@ -76,6 +76,9 @@ export default class APIHelper {
             this.state.creatures.push(response.creature);
             this.checkLoot(response);
         } else if (response.__type === 'FOpenChestResult') {
+            if (this.config.database.save && response.loot) {
+                database.save('chest', response.loot);
+            }
             this.checkLoot(response);
         } else if (response.__type === 'FCreadex') {
             // nothing to do
