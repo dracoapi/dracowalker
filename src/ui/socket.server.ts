@@ -44,7 +44,7 @@ export default class SocketServer {
             socket.on('inventory_list', () => this.sendInventory(socket));
             socket.on('creature_list', () => this.sendCreatures(socket));
             socket.on('eggs_list', () => this.sendEggs(socket));
-            socket.on('player_stats', () => this.sendPlayerStats(socket));
+            socket.on('player_stats', () => this.sendPlayerStats());
             socket.on('transfer_creature', msg => this.transferCreature(socket, msg));
             socket.on('drop_items', msg => this.dropItems(socket, msg));
             socket.on('evolve_creature', msg => this.evolveCreature(socket, msg));
@@ -170,12 +170,11 @@ export default class SocketServer {
     }
 
     /**
-     * Send player stats to a client after it request it
-     * @param {object} client - the socket client to send info to
+     * Send player stats to all clients
      */
-    sendPlayerStats(client) {
+    sendPlayerStats() {
         if (this.state.player) {
-            client.emit('player_stats', this.state.player);
+            this.io.emit('player_stats', this.state.player.avatar);
         }
     }
 

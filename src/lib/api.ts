@@ -46,22 +46,13 @@ export default class APIHelper {
         } else if (response.__type === 'FHatchingResult') {
             this.state.player.avatar = response.avaUpdate;
             this.state.creatures.push(response.creature);
+            this.checkLoot(response);
         } else if (response.__type === 'FUpdate') {
             for (const item of response.items) {
                 if (item.__type === 'FPickItemsResponse') {
-                    if (item.loot) {
-                        logger.debug('Loot:');
-                        this.logLoot(item.loot);
-                    }
-                    if (item.levelUpLoot) {
-                        logger.debug('Level up loot:');
-                        this.logLoot(item.levelUpLoot);
-                    }
+                    this.checkLoot(item);
                 } else if (item.__type === 'FTransferMonsterToCandiesResponse') {
-                    if (item.loot) {
-                        logger.debug('Transfer loot:');
-                        this.logLoot(item.loot);
-                    }
+                    this.checkLoot(item);
                 } else if (item.__type === 'FAvaUpdate') {
                     this.state.player.avatar = item;
                 } else if (item.__type === 'FBuilding') {
@@ -76,21 +67,16 @@ export default class APIHelper {
             }
         } else if (response.__type === 'FCatchCreatureResult') {
             this.state.player.avatar = response.avaUpdate;
+            this.checkLoot(response);
         } else if (response.__type === 'FUserCreaturesList') {
             this.state.creatures = response.userCreatures;
         } else if (response.__type === 'FUserCreatureUpdate') {
             this.state.player.avatar = response.avaUpdate;
             this.state.creatures = this.state.creatures.filter(c => c.id !== response.creature.id);
             this.state.creatures.push(response.creature);
+            this.checkLoot(response);
         } else if (response.__type === 'FOpenChestResult') {
-            if (response.loot) {
-                logger.debug('Chest loot:');
-                this.logLoot(response.loot);
-            }
-            if (response.levelUpLoot) {
-                logger.debug('Level up loot:');
-                this.logLoot(response.levelUpLoot);
-            }
+            this.checkLoot(response);
         } else if (response.__type === 'FCreadex') {
             // nothing to do
         } else if (response.__type === 'FUserHatchingInfo') {
@@ -147,6 +133,18 @@ export default class APIHelper {
                     database.save('wild', wild);
                 }
             }
+        }
+    }
+
+    checkLoot(item: any) {
+        if (item.loot) {
+            logger.debug('Chest loot:');
+            this.logLoot(item.loot);
+        }
+        if (item.levelUpLoot) {
+            logger.debug('Level up loot:');
+            this.logLoot(item.levelUpLoot);
+            this.state.socket.sendPlayerStats();
         }
     }
 
