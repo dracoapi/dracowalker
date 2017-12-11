@@ -18,6 +18,6 @@ tsc
 node ./bin/app.js
 ```
 
-Don't forget to create a `data/config.yaml` to configure it.
+Don't forget to create a `data/config.yaml` to [configure](https://github.com/dracoapi/dracowalker/wiki/config) it.
 
 
