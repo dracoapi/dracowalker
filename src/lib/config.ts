@@ -57,7 +57,9 @@ module.exports.load = function() {
             url: null,
         },
         database: { },
-        loglevel: 'info',
+        log: {
+            level: 'info',
+        },
     };
 
     try {
@@ -83,14 +85,14 @@ module.exports.load = function() {
     logger.add(logger.transports.Console, {
         'timestamp': () => moment().format('HH:mm:ss'),
         'colorize': true,
-        'level': config.loglevel,
+        'level': config.log.level,
     });
 
     logger.add(logger.transports.File, {
         'timestamp': () => moment().format('HH:mm:ss'),
         'filename': 'data/dracowalker.log',
         'json': false,
-        'level': config.loglevel,
+        'level': config.log.level,
     });
 
     fixInventoryLimitConfig(config);

@@ -2,7 +2,11 @@ import * as logger from 'winston';
 import * as _ from 'lodash';
 
 import * as DracoNode from 'draconode';
+import * as dracoText from 'dracotext';
+
 import * as database from './data';
+
+const strings = dracoText.load('english');
 
 /**
  * Helper class to deal with api requests and reponses.
@@ -45,9 +49,19 @@ export default class APIHelper {
         } else if (response.__type === 'FUpdate') {
             for (const item of response.items) {
                 if (item.__type === 'FPickItemsResponse') {
-                    // logger.debug('Loot', item);
+                    if (item.loot) {
+                        logger.debug('Loot:');
+                        this.logLoot(item.loot);
+                    }
+                    if (item.levelUpLoot) {
+                        logger.debug('Level up loot:');
+                        this.logLoot(item.levelUpLoot);
+                    }
                 } else if (item.__type === 'FTransferMonsterToCandiesResponse') {
-                    // logger.debug('Loot', item.loot);
+                    if (item.loot) {
+                        logger.debug('Transfer loot:');
+                        this.logLoot(item.loot);
+                    }
                 } else if (item.__type === 'FAvaUpdate') {
                     this.state.player.avatar = item;
                 } else if (item.__type === 'FBuilding') {
@@ -69,7 +83,14 @@ export default class APIHelper {
             this.state.creatures = this.state.creatures.filter(c => c.id !== response.creature.id);
             this.state.creatures.push(response.creature);
         } else if (response.__type === 'FOpenChestResult') {
-            // nothing
+            if (response.loot) {
+                logger.debug('Chest loot:');
+                this.logLoot(response.loot);
+            }
+            if (response.levelUpLoot) {
+                logger.debug('Level up loot:');
+                this.logLoot(response.levelUpLoot);
+            }
         } else if (response.__type === 'FCreadex') {
             // nothing to do
         } else if (response.__type === 'FUserHatchingInfo') {
@@ -125,6 +146,24 @@ export default class APIHelper {
                 for (const wild of wilds) {
                     database.save('wild', wild);
                 }
+            }
+        }
+    }
+
+    logLoot(loot: DracoNode.objects.FLoot) {
+        for (const item of loot.lootList) {
+            if (item.__type === 'FLootItemCandy') {
+                const candyType = (item as DracoNode.objects.FLootItemCandy).candyType;
+                const creature = strings.getCreature(DracoNode.enums.CreatureType[candyType]);
+                logger.debug(`  ${item.qty} ${creature} candies.`);
+            } else if (item.__type === 'FLootItemItem') {
+                const itemType = (item as DracoNode.objects.FLootItemItem).item;
+                const creature = strings.getItem(DracoNode.enums.ItemType[itemType]);
+                logger.debug(`  ${item.qty} ${creature}.`);
+            } else if (item.__type === 'FLootItemExp') {
+                logger.debug(`  ${item.qty} exp.`);
+            } else {
+                console.log(JSON.stringify(item, null, 2));
             }
         }
     }

@@ -50,7 +50,9 @@ let client: DracoNode.Client;
 async function main() {
     logger.info('App starting...');
     if (config.ui.enabled) {
-        logger.info('go to http://ui.dracoapi.ml/ for ui');
+        let portInfo = '';
+        if (config.ui.port && config.ui.port !== 8000) portInfo = `?websocket=http://localhost:${config.ui.port}`;
+        logger.info(`go to http://ui.dracoapi.ml/${portInfo} for ui`);
     }
     try {
         const valid = await proxyhelper.checkProxy();
@@ -166,7 +168,8 @@ async function handlePendingActions() {
         const todo = state.todo.shift();
         if (todo.call === 'release_creature') {
             logger.info('Release creatures', todo.creatures);
-            await client.releaseCreatures(todo.creatures);
+            const response = await client.releaseCreatures(todo.creatures);
+            apihelper.parse(response);
             await Bluebird.delay(config.delay.release * _.random(900, 1100));
 
         } else if (todo.call === 'evolve_creature') {
