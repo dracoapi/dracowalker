@@ -3,8 +3,19 @@ import * as logger from 'winston';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
+import { enums } from 'draconode';
+
 const yaml = require('js-yaml');
 const winstonCommon = require('winston/lib/winston/common');
+
+function fixInventoryLimitConfig(config) {
+    for (const item in config.inventory) {
+        if (!Number.isInteger(+item)) {
+            config.inventory[enums.ItemType[item]] = config.inventory[item];
+            delete config.inventory[item];
+        }
+    }
+}
 
 module.exports.load = function() {
     let config: any = {
@@ -81,6 +92,8 @@ module.exports.load = function() {
         'json': false,
         'level': config.loglevel,
     });
+
+    fixInventoryLimitConfig(config);
 
     return config;
 };
