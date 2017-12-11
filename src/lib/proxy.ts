@@ -77,6 +77,7 @@ export default class ProxyHelper {
                 },
                 simple: true,
                 gzip: true,
+                proxy,
             });
             return true;
         } catch (e) {
