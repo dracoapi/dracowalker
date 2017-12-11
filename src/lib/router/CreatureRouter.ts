@@ -5,12 +5,6 @@ import { BaseRouter, Target } from './BaseRouter';
 export default class CreatureRouter extends BaseRouter {
     async checkPath(): Promise<Target[]> {
         // generate a new path at each update to always get the closest creature
-        if (this.state.path.waypoints.length === 0) {
-            if (this.state.path.target) {
-                // we arrive at target
-                this.state.path.visited.push(this.state.path.target.id);
-            }
-        }
         return await this.generatePath();
     }
 

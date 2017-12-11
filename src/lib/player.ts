@@ -86,6 +86,8 @@ export default class Player {
 
                 logger.info('Building spun!');
 
+                this.state.path.visited.push(stop.id);
+
                 await Bluebird.delay(this.config.delay.spin * _.random(900, 1100));
             } catch (e) {
                 logger.error('Unable to spin');

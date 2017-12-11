@@ -6,10 +6,6 @@ import { BaseRouter, Target } from './BaseRouter';
 export default class StopRouter extends BaseRouter {
     async checkPath(): Promise<Target[]> {
         if (this.state.path.waypoints.length === 0) {
-            if (this.state.path.target) {
-                // we arrive at target
-                this.state.path.visited.push(this.state.path.target.id);
-            }
             // get a new target and path to go there
             return await this.generatePath();
         }

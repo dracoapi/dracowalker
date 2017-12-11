@@ -182,6 +182,10 @@ async function handlePendingActions() {
 
         } else if (todo.call === 'drop_items') {
             await client.discardItem(todo.id, todo.count);
+            const item = state.inventory.find(i => i.type === todo.id);
+            item.count = Math.max(0, item.count - todo.count);
+            const name = strings.getItem(DracoNode.enums.ItemType[todo.id]);
+            logger.info(`Dropped ${todo.count} of ${name}`);
             await Bluebird.delay(config.delay.recycle * _.random(900, 1100));
 
         } else if (todo.call === 'open_egg') {

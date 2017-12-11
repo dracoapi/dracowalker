@@ -158,14 +158,18 @@ export default class APIHelper {
                 logger.debug(`  ${item.qty} ${creature} candies.`);
             } else if (item.__type === 'FLootItemItem') {
                 const itemType = (item as DracoNode.objects.FLootItemItem).item;
-                const creature = strings.getItem(DracoNode.enums.ItemType[itemType]);
-                logger.debug(`  ${item.qty} ${creature}.`);
+                const dropItem = strings.getItem(DracoNode.enums.ItemType[itemType]);
+                if (!dropItem) logger.warn(itemType);
+                logger.debug(`  ${item.qty} ${dropItem}.`);
             } else if (item.__type === 'FLootItemExp') {
                 logger.debug(`  ${item.qty} exp.`);
             } else if (item.__type === 'FLootItemDust') {
                 logger.debug(`  ${item.qty} dust.`);
             } else if (item.__type === 'FLootItemBuff') {
-                // ?
+                logger.warn(item);
+                const buff = (item as DracoNode.objects.FLootItemBuff).buff;
+                const info = strings.get('key.buff.' + DracoNode.enums.BuffType[buff.type]);
+                logger.debug(` Buff received. ${info}`);
             } else {
                 console.log(JSON.stringify(item, null, 2));
             }
