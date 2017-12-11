@@ -126,6 +126,7 @@ async function main() {
             e.message.indexOf('ECONNREFUSED ') >= 0 || // connection refused
             e.message.indexOf('403') >= 0) { // ip banned?
             logger.error('Bad proxy');
+            // logger.error(e.message);
             proxyhelper.badProxy();
         } else {
             logger.error(e);

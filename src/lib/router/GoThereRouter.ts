@@ -15,7 +15,7 @@ export default class GoThereRouter extends BaseRouter {
         if (this.state.path.waypoints.length === 0) {
             if (this.first) {
                 this.first = false;
-                this.state.path.waypoints = [ this.target ];
+                await this.generateWaypoint(this.target);
                 return this.state.path.waypoints;
             } else {
                 // we arrive at target

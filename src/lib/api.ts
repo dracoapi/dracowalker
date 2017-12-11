@@ -162,6 +162,10 @@ export default class APIHelper {
                 logger.debug(`  ${item.qty} ${creature}.`);
             } else if (item.__type === 'FLootItemExp') {
                 logger.debug(`  ${item.qty} exp.`);
+            } else if (item.__type === 'FLootItemDust') {
+                logger.debug(`  ${item.qty} dust.`);
+            } else if (item.__type === 'FLootItemBuff') {
+                // ?
             } else {
                 console.log(JSON.stringify(item, null, 2));
             }

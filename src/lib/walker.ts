@@ -1,9 +1,5 @@
 import * as Bluebird from 'bluebird';
 import * as logger from 'winston';
-import { BaseRouter } from './router/BaseRouter';
-import StopRouter from './router/StopRouter';
-import StadStillRouter from './router/StandStillRouter';
-import CreatureRouter from './router/CreatureRouter';
 
 const GoogleMapsAPI = require('googlemaps');
 const geolib = require('geolib');
@@ -11,6 +7,11 @@ const geolib = require('geolib');
 Bluebird.promisifyAll(GoogleMapsAPI.prototype);
 
 import APIHelper from './api';
+import { BaseRouter } from './router/BaseRouter';
+import StopRouter from './router/StopRouter';
+import StadStillRouter from './router/StandStillRouter';
+import CreatureRouter from './router/CreatureRouter';
+import HumanRouter from './router/HumanRouter';
 
 /**
  * Helper class to deal with our walker.
@@ -30,7 +31,9 @@ export default class Walker {
         this.config = config;
         this.state = state;
         this.apihelper = new APIHelper(config, state);
-        if (config.router === 'stops') {
+        if (config.router === 'human') {
+            this.router = new HumanRouter(config, state);
+        } else if (config.router === 'stops') {
             this.router = new StopRouter(config, state);
         } else if (config.router === 'stand') {
             this.router = new StadStillRouter(config, state);

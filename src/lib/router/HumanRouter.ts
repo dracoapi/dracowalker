@@ -2,9 +2,9 @@ import * as _ from 'lodash';
 import * as DracoNode from 'draconode';
 import { BaseRouter, Target } from './BaseRouter';
 
-export default class CreatureRouter extends BaseRouter {
+export default class HumanRouter extends BaseRouter {
     async checkPath(): Promise<Target[]> {
-        // generate a new path at each update to always get the closest creature
+        // generate a new path every few seconds
         if (this.state.path.waypoints.length === 0) {
             if (this.state.path.target) {
                 // we arrive at target
@@ -34,14 +34,29 @@ export default class CreatureRouter extends BaseRouter {
                                                         x.type === DracoNode.enums.ItemType.MAGIC_BALL_GOOD);
         const ballCount = _.reduce(balls, (sum, i) => sum + i.count, 0);
 
-        // if enough balls, find a creature
-        if (ballCount > 5) {
-            const creature = this.findClosestCreature();
-            if (creature) return creature;
+        // if not enough balls, find a stop to spin
+        if (ballCount < 5) {
+            const stop = this.findClosestStop();
+            if (stop) return stop;
         }
 
-        // if no creature around or no balls to throw, find a stop to spin
-        return this.findClosestStop();
+        const stop = this.findClosestStop();
+        const creature = this.findClosestCreature();
+        const chest = this.findClosestChest();
+
+        return _.orderBy([stop, creature, chest].filter(o => o), 'distance', 'asc')[0];
+    }
+
+    findClosestChest() {
+        if (this.state.map.chests.length <= 0) return null;
+
+        let chests: DracoNode.objects.FChest[] = this.state.map.chests;
+        chests = _.orderBy(chests, 'distance', 'asc');
+        return new Target({
+            id: chests[0].id,
+            lat: chests[0].coords.latitude,
+            lng: chests[0].coords.longitude,
+        });
     }
 
     findClosestCreature() {
@@ -49,7 +64,7 @@ export default class CreatureRouter extends BaseRouter {
         allCreatures = _.uniqBy(allCreatures, 'id');
         if (allCreatures.length > 0) {
             for (const creature of allCreatures) {
-                if (!creature.distance) creature.distance = this.distance(creature);
+                creature.distance = this.distance(creature);
             }
             allCreatures = _.orderBy(allCreatures, 'distance', 'asc');
             // take closest
