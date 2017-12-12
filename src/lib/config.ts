@@ -81,7 +81,7 @@ module.exports.load = function() {
             message,
             meta,
         }));
-        console[level in console ? level : 'log'](output);
+        console[level === 'errpr' ? 'error' : 'log'](output);
         setImmediate(callback, null, true);
     };
 
@@ -100,6 +100,8 @@ module.exports.load = function() {
     });
 
     fixInventoryLimitConfig(config);
+
+    // fs.writeFileSync('data/config.json', JSON.stringify(config, null, 2), 'utf8');
 
     return config;
 };
