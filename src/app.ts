@@ -156,7 +156,9 @@ async function updatePos() {
         }
     } catch (e) {
         logger.error(e);
-        if (e.details) logger.error(e.details);
+        if (e.details) {
+            logger.error(e.details);
+        }
     }
 
     setTimeout(updatePos, 1000);

@@ -81,7 +81,7 @@ module.exports.load = function() {
             message,
             meta,
         }));
-        console[level === 'errpr' ? 'error' : 'log'](output);
+        console[level === 'error' ? 'error' : 'log'](output);
         setImmediate(callback, null, true);
     };
 
@@ -98,6 +98,10 @@ module.exports.load = function() {
         'json': false,
         'level': config.log.filelevel || config.log.level,
     });
+
+    if (!fs.existsSync(`data/${filename}`)) {
+        logger.warn(`Config file ${filename} does not exists, using default.`);
+    }
 
     fixInventoryLimitConfig(config);
 
