@@ -2,7 +2,7 @@
 credentials:
   # DEVICE or GOOGLE
   login: GOOGLE
-  deviceId: 'aaa-aaa'
+  deviceId: 'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA'
   username: 'username'
   password: 'password'
 
@@ -21,8 +21,3 @@ speed: auto
 proxy: 
   # url: auto
   url: http://localhost:8888
-
-# true to enable ui, go to ui.dracoapi.ml to see it
-ui:
-  enabled: true
-
