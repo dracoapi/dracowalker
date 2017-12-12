@@ -159,8 +159,11 @@ export default class APIHelper {
                 logger.debug(`  ${item.qty} ${creature} candies.`);
             } else if (item.__type === 'FLootItemItem') {
                 const itemType = (item as DracoNode.objects.FLootItemItem).item;
-                const dropItem = strings.getItem(DracoNode.enums.ItemType[itemType]);
-                if (!dropItem) logger.warn(itemType);
+                const type = DracoNode.enums.ItemType[itemType];
+                let dropItem = strings.getItem(type);
+                if (type.indexOf('EGG_KM_') === 0) {
+                    dropItem = `${type.substr('EGG_KM_'.length)} km ` + strings.getItem('EGG');
+                }
                 logger.debug(`  ${item.qty} ${dropItem}.`);
             } else if (item.__type === 'FLootItemExp') {
                 logger.debug(`  ${item.qty} exp.`);
