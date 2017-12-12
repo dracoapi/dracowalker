@@ -59,6 +59,7 @@ module.exports.load = function() {
         database: { },
         log: {
             level: 'info',
+            file: 'dracowalker.log',
         },
     };
 
@@ -66,8 +67,11 @@ module.exports.load = function() {
         fs.mkdirSync('data');
     } catch (e) {}
 
-    if (fs.existsSync('data/config.yaml')) {
-        const loaded = yaml.safeLoad(fs.readFileSync('data/config.yaml', 'utf8'));
+    const argv = require('minimist')(process.argv.slice(2));
+    const filename = argv.config || 'config.yaml';
+
+    if (fs.existsSync(`data/${filename}`)) {
+        const loaded = yaml.safeLoad(fs.readFileSync(`data/${filename}`, 'utf8'));
         config = _.defaultsDeep(loaded, config);
     }
 
@@ -90,9 +94,9 @@ module.exports.load = function() {
 
     logger.add(logger.transports.File, {
         'timestamp': () => moment().format('HH:mm:ss'),
-        'filename': 'data/dracowalker.log',
+        'filename': `data/${config.log.file}`,
         'json': false,
-        'level': config.log.level,
+        'level': config.log.filelevel || config.log.level,
     });
 
     fixInventoryLimitConfig(config);
