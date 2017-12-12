@@ -173,8 +173,8 @@ export default class SocketServer {
      * Send player stats to all clients
      */
     sendPlayerStats() {
-        if (this.state.player) {
-            this.io.emit('player_stats', this.state.player.avatar);
+        if (this.state.player && this.state.player.avatar) {
+            this.io.emit('player_stats', { player: this.state.player.avatar });
         }
     }
 
