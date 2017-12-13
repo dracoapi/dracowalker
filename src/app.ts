@@ -195,6 +195,8 @@ async function handlePendingActions() {
         } else if (todo.call === 'open_egg') {
             const response = await client.openHatchedEgg(todo.incubatorId);
             apihelper.parse(response);
+            response.creature.display = strings.getCreature(DracoNode.enums.CreatureType[response.creature.name]);
+            logger.info('Egg hatched, received a ' + response.creature.display);
 
         } else {
             logger.warn('Unhandled todo: ' + todo.call);

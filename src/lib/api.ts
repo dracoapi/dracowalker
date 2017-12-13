@@ -105,14 +105,14 @@ export default class APIHelper {
             }
 
             // avatar
-            const avatar = response.items.find(o => o.__type === 'FAvaUpdate');
+            const avatar: DracoNode.objects.FAvaUpdate = response.items.find(o => o.__type === 'FAvaUpdate');
             this.state.player.avatar = avatar;
             this.state.player.storage.creatures = this.state.player.avatar.creatureStorageSize;
 
             // eggs
             const hatchInfo = response.items.find(o => o.__type === 'FHatchedEggs');
-            if (hatchInfo.egg.isHatching) {
-                const egg = hatchInfo.egg;
+            if (hatchInfo && hatchInfo.incubatorId) {
+                const egg: DracoNode.objects.FEgg = hatchInfo.egg;
                 if (egg.passedDistance >= egg.totalDistance) {
                     // open it in a few
                     this.state.todo.push({
@@ -120,6 +120,13 @@ export default class APIHelper {
                         incubatorId: egg.incubatorId,
                     });
                 }
+            }
+
+            // encounter
+            const encounter = response.items.find(o => o.__type === 'FEncounterDetails');
+            if (encounter) {
+                logger.warn(`You've been attacked`);
+                logger.info(JSON.stringify(encounter, null, 2));
             }
 
             // save state
@@ -140,11 +147,11 @@ export default class APIHelper {
     }
 
     checkLoot(item: any) {
-        if (item.loot) {
+        if (item.loot && item.loot.lootList.length > 0) {
             logger.debug('Loot:');
             this.logLoot(item.loot);
         }
-        if (item.levelUpLoot) {
+        if (item.levelUpLoot && item.levelUpLoot.lootList.length > 0) {
             logger.debug('Level up loot:');
             this.logLoot(item.levelUpLoot);
             this.state.socket.sendPlayerStats();
