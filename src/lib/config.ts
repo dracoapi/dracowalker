@@ -75,15 +75,18 @@ module.exports.load = function() {
         config = _.defaultsDeep(loaded, config);
     }
 
-    logger.transports.Console.prototype.log = function (level, message, meta, callback) {
-        const output = winstonCommon.log(Object.assign({}, this, {
-            level,
-            message,
-            meta,
-        }));
-        console[level === 'error' ? 'error' : 'log'](output);
-        setImmediate(callback, null, true);
-    };
+    if (process.env.VSCODE_CWD) {
+        // fix an issue with integrated Visual Studio Code terminal
+        logger.transports.Console.prototype.log = function (level, message, meta, callback) {
+            const output = winstonCommon.log(Object.assign({}, this, {
+                level,
+                message,
+                meta,
+            }));
+            console[level === 'error' ? 'error' : 'log'](output);
+            setImmediate(callback, null, true);
+        };
+    }
 
     logger.remove(logger.transports.Console);
     logger.add(logger.transports.Console, {

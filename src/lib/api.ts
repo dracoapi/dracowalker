@@ -175,7 +175,8 @@ export default class APIHelper {
                 const info = strings.get('key.buff.' + DracoNode.enums.BuffType[buff.type]);
                 logger.debug(` Buff received. ${info}`);
             } else {
-                console.log(JSON.stringify(item, null, 2));
+                logger.debug('Loot unhandled:');
+                logger.debug(JSON.stringify(item, null, 2));
             }
         }
     }
