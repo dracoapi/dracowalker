@@ -197,8 +197,10 @@ async function handlePendingActions() {
         } else {
             logger.warn('Unhandled todo: ' + todo.call);
         }
-    } else {
+    } else if (Math.random() < 0.8) {
         await player.cleanInventory();
+    } else {
+        await player.evolveperfect();
     }
 }
 

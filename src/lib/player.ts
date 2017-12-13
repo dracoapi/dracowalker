@@ -172,7 +172,7 @@ export default class Player {
     async autoReleaseCreature(creature) {
         if (!this.config.behavior.autorelease) return;
 
-        const creatures: any[] = this.state.creatures;
+        const creatures: DracoNode.objects.FUserCreature[] = this.state.creatures;
         const better = creatures.find(c =>
             c.name === creature.name &&
             (c.attackValue + c.staminaValue) > (creature.attackValue + creature.staminaValue) &&
@@ -187,6 +187,27 @@ export default class Player {
             return response;
         } else {
             return null;
+        }
+    }
+
+    async evolveperfect() {
+        if (!this.config.behavior.evolveperfect) return;
+        const creatures: DracoNode.objects.FUserCreature[] = this.state.creatures;
+        for (const creature of creatures) {
+            if (creature.attackValue >= 5 && creature.staminaValue >= 5 && creature.possibleEvolutions.size > 0) {
+                const to = creature.possibleEvolutions.keys().next().value;
+                const candiesNeeded = creature.possibleEvolutions.get(to);
+                const candies = this.state.player.avatar.candies.get(creature.candyType);
+                if (candies >= candiesNeeded) {
+                    const client: DracoNode.Client = this.state.client;
+                    const response = await client.evolve(creature.id, to);
+                    this.apihelper.parse(response);
+                    const from = (<any>creature).display || strings.getCreature(DracoNode.enums.CreatureType[creature.name]);
+                    response.creature.display = strings.getCreature(DracoNode.enums.CreatureType[response.creature.name]);
+                    logger.info(`Perfect ${from} evolved to ${response.creature.display}`);
+                    await Bluebird.delay(this.config.delay.evolve * _.random(900, 1100));
+                }
+            }
         }
     }
 
