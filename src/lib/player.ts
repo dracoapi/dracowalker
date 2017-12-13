@@ -91,10 +91,9 @@ export default class Player {
                 await Bluebird.delay(this.config.delay.spin * _.random(900, 1100));
             } catch (e) {
                 logger.error('Unable to spin');
-                if (e.details) {
+                logger.error(e);
+                if (e.details && e.details.constructor.name !== 'IncomingMessage') {
                     logger.error(e.details);
-                } else {
-                    logger.error(e);
                 }
             }
         }, {concurrency: 1});

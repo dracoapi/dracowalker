@@ -114,7 +114,9 @@ async function main() {
                 await player.dispatchIncubators();
             } catch (e) {
                 logger.error(e);
-                if (e.details) logger.error(e.details);
+                if (e.details && e.details.constructor.name !== 'IncomingMessage') {
+                    logger.error(e.details);
+                }
             }
         }, 5 * 60 * 1000);
 
@@ -156,7 +158,7 @@ async function updatePos() {
         }
     } catch (e) {
         logger.error(e);
-        if (e.details) {
+        if (e.details && e.details.constructor.name !== 'IncomingMessage') {
             logger.error(e.details);
         }
     }
