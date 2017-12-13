@@ -86,8 +86,15 @@ export default class Walker {
      * @return {int} distance to target
      */
     distance(target): number {
-        if (!target.latitude && target.coords) target = target.coords;
-        return geolib.getDistance(this.state.pos, target, 1, 1);
+        try {
+            if (!target.latitude && target.coords) target = target.coords;
+            return geolib.getDistance(this.state.pos, target, 1, 1);
+        } catch (e) {
+            logger.error('Error in walker.distance');
+            logger.error(JSON.stringify(this.state.pos, null, 2));
+            logger.error(JSON.stringify(target, null, 2));
+            throw e;
+        }
     }
 
     /**
