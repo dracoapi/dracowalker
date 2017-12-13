@@ -141,7 +141,7 @@ export default class APIHelper {
 
     checkLoot(item: any) {
         if (item.loot) {
-            logger.debug('Chest loot:');
+            logger.debug('Loot:');
             this.logLoot(item.loot);
         }
         if (item.levelUpLoot) {
