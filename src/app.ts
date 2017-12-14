@@ -77,6 +77,10 @@ async function main() {
         apihelper.parse(response);
         const newLicence = response.info.newLicense;
 
+        if (response.info.sendClientLog) {
+            logger.warn('Server is asking for client log!');
+        }
+
         logger.debug('Load...');
         await client.load();
 
@@ -217,6 +221,8 @@ async function mapRefresh(): Promise<void> {
     const pos = walker.fuzzedLocation(state.pos);
     const update = await client.getMapUpdate(pos.lat, pos.lng);
     apihelper.parseMapUpdate(update);
+
+    await client.call('ClientEventService', 'clientLogRecords', [ { __type: 'List<>', value: [] } ]);
 
     state.api.lastMapUpdate = {
         when: moment(),

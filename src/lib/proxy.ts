@@ -78,6 +78,7 @@ export default class ProxyHelper {
                 simple: true,
                 gzip: true,
                 proxy,
+                timeout: 2000,
             });
             return true;
         } catch (e) {
