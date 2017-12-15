@@ -65,6 +65,8 @@ export default class Walker {
         const dest = this.state.path.waypoints[0];
         let speed = this.config.speed;
         speed += (Math.random() - 0.5) * speed * 0.1;
+        if (speed <= 0) return;
+
         const speedms = speed / 3.6;
         let dist = this.distance(dest);
         const step = dist / speedms;
@@ -104,7 +106,7 @@ export default class Walker {
      * @return {float} random value
      */
     randGPSFloatBetween(min: number, max: number): number {
-        return parseFloat((Math.random() * (max - min) + min).toFixed(14));
+        return (Math.random() * (max - min) + min);
     }
 
     /**
