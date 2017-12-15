@@ -29,7 +29,7 @@ module.exports.load = function() {
             lng: 2.3364526,
         },
         router: 'stops',
-        speed: 5,
+        speed: 'auto',
         gmapKey: '',
         ui: {
             enabled: true,

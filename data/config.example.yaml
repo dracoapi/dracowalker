@@ -11,9 +11,9 @@ pos:
   lat: 48.8628407
   lng: 2.3286178
 
-# Speed in km/h (default = 4)
+# Speed in km/h (default = auto)
 # auto = 90% of run speed from server
-speed: auto
+speed: 5
 
 # If nothing is set, direct call will be made
 # If a proxy is set it will be used (like http://server:8080)
