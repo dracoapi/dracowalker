@@ -111,5 +111,11 @@ module.exports.load = function() {
 
     // fs.writeFileSync('data/config.json', JSON.stringify(config, null, 2), 'utf8');
 
+    if (!config.credentials.deviceId || (config.credentials.login && !config.credentials.username)) {
+        logger.error('Invalid credentials. Please fill data/config.yaml.');
+        logger.error('look at config.example.yaml for example.');
+        process.exit();
+    }
+
     return config;
 };

@@ -59,7 +59,7 @@ export default class Walker {
      * Update state.
      */
     walk(): void {
-        if (!this.state.path || this.state.path.waypoints.length === 0) return;
+        if (this.config.speed === 0 || !this.state.path || this.state.path.waypoints.length === 0) return;
 
         // move towards next target
         const dest = this.state.path.waypoints[0];

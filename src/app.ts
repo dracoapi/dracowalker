@@ -17,12 +17,6 @@ import SocketServer from './ui/socket.server';
 const strings = dracoText.load('english');
 const config = require('./lib/config').load();
 
-if (!config.credentials.deviceId) {
-    logger.error('Invalid credentials. Please fill data/config.yaml.');
-    logger.error('look at config.example.yaml for example.');
-    process.exit();
-}
-
 const state: any = {
     pos: {
         lat: config.pos.lat,

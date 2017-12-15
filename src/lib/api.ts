@@ -125,8 +125,8 @@ export default class APIHelper {
             // encounter
             const encounter = response.items.find(o => o.__type === 'FEncounterDetails');
             if (encounter) {
-                logger.warn(`You've been attacked`);
-                logger.info(JSON.stringify(encounter, null, 2));
+                logger.warn(`You're being attacked!`);
+                // logger.info(JSON.stringify(encounter, null, 2));
             }
 
             // save state
