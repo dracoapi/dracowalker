@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as DracoNode from 'draconode';
+import  { enums } from 'draconode';
 import { BaseRouter, Target } from './BaseRouter';
 
 export default class CreatureRouter extends BaseRouter {
@@ -23,9 +23,9 @@ export default class CreatureRouter extends BaseRouter {
     async findNextTarget() {
         if (!this.state.map) return null;
 
-        const balls =  this.state.inventory.filter(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_SIMPLE ||
-                                                        x.type === DracoNode.enums.ItemType.MAGIC_BALL_NORMAL ||
-                                                        x.type === DracoNode.enums.ItemType.MAGIC_BALL_GOOD);
+        const balls =  this.state.inventory.filter(x => x.type === enums.ItemType.MAGIC_BALL_SIMPLE ||
+                                                        x.type === enums.ItemType.MAGIC_BALL_NORMAL ||
+                                                        x.type === enums.ItemType.MAGIC_BALL_GOOD);
         const ballCount = _.reduce(balls, (sum, i) => sum + i.count, 0);
 
         // if enough balls, find a creature
@@ -58,7 +58,7 @@ export default class CreatureRouter extends BaseRouter {
 
     findClosestStop() {
         let buildings: any[] = this.state.map.buildings;
-        buildings = buildings.filter(b => b.type === DracoNode.enums.BuildingType.STOP &&
+        buildings = buildings.filter(b => b.type === enums.BuildingType.STOP &&
             b.available && b.pitstop && !b.pitstop.cooldown &&
             this.state.path.visited.indexOf(b.id) < 0);
 

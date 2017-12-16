@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as DracoNode from 'draconode';
+import { objects, enums } from 'draconode';
 import { BaseRouter, Target } from './BaseRouter';
 
 export default class HumanRouter extends BaseRouter {
@@ -23,9 +23,9 @@ export default class HumanRouter extends BaseRouter {
     async findNextTarget() {
         if (!this.state.map) return null;
 
-        const balls =  this.state.inventory.filter(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_SIMPLE ||
-                                                        x.type === DracoNode.enums.ItemType.MAGIC_BALL_NORMAL ||
-                                                        x.type === DracoNode.enums.ItemType.MAGIC_BALL_GOOD);
+        const balls =  this.state.inventory.filter(x => x.type === enums.ItemType.MAGIC_BALL_SIMPLE ||
+                                                        x.type === enums.ItemType.MAGIC_BALL_NORMAL ||
+                                                        x.type === enums.ItemType.MAGIC_BALL_GOOD);
         const ballCount = _.reduce(balls, (sum, i) => sum + i.count, 0);
 
         // if not enough balls, find a stop to spin
@@ -44,7 +44,7 @@ export default class HumanRouter extends BaseRouter {
     findClosestChest() {
         if (this.state.map.chests.length <= 0) return null;
 
-        let chests: DracoNode.objects.FChest[] = this.state.map.chests;
+        let chests: objects.FChest[] = this.state.map.chests;
         chests = _.orderBy(chests, 'distance', 'asc');
         return new Target({
             id: chests[0].id,
@@ -73,7 +73,7 @@ export default class HumanRouter extends BaseRouter {
 
     findClosestStop() {
         let buildings: any[] = this.state.map.buildings;
-        buildings = buildings.filter(b => b.type === DracoNode.enums.BuildingType.STOP &&
+        buildings = buildings.filter(b => b.type === enums.BuildingType.STOP &&
             b.available && b.pitstop && !b.pitstop.cooldown &&
             this.state.path.visited.indexOf(b.id) < 0);
 

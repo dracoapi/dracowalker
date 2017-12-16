@@ -1,7 +1,7 @@
 import * as logger from 'winston';
 import * as _ from 'lodash';
 
-import * as DracoNode from 'draconode';
+import { Client, objects, enums } from 'draconode';
 import * as dracoText from 'dracotext';
 
 import * as database from './data';
@@ -92,7 +92,8 @@ export default class APIHelper {
     }
 
     parseMapUpdate(response) {
-        if (!response) return;
+        const info: any = {};
+        if (!response) return info;
         if (response.__type === 'FUpdate') {
             // buildings
             let buildings = [];
@@ -105,14 +106,14 @@ export default class APIHelper {
             }
 
             // avatar
-            const avatar: DracoNode.objects.FAvaUpdate = response.items.find(o => o.__type === 'FAvaUpdate');
+            const avatar: objects.FAvaUpdate = response.items.find(o => o.__type === 'FAvaUpdate');
             this.state.player.avatar = avatar;
             this.state.player.storage.creatures = this.state.player.avatar.creatureStorageSize;
 
             // eggs
             const hatchInfo = response.items.find(o => o.__type === 'FHatchedEggs');
             if (hatchInfo && hatchInfo.incubatorId) {
-                const egg: DracoNode.objects.FEgg = hatchInfo.egg;
+                const egg: objects.FEgg = hatchInfo.egg;
                 if (egg.passedDistance >= egg.totalDistance) {
                     // open it in a few
                     this.state.todo.push({
@@ -120,13 +121,6 @@ export default class APIHelper {
                         incubatorId: egg.incubatorId,
                     });
                 }
-            }
-
-            // encounter
-            const encounter = response.items.find(o => o.__type === 'FEncounterDetails');
-            if (encounter) {
-                logger.warn(`You're being attacked!`);
-                // logger.info(JSON.stringify(encounter, null, 2));
             }
 
             // save state
@@ -143,7 +137,15 @@ export default class APIHelper {
                     database.save('wild', wild);
                 }
             }
+
+            // wild encounter
+            const encounter = response.items.find(o => o.__type === 'FEncounterDetails');
+            if (encounter) {
+                info.encounter = encounter;
+            }
         }
+
+        return info;
     }
 
     checkLoot(item: any) {
@@ -158,15 +160,15 @@ export default class APIHelper {
         }
     }
 
-    logLoot(loot: DracoNode.objects.FLoot) {
+    logLoot(loot: objects.FLoot) {
         for (const item of loot.lootList) {
             if (item.__type === 'FLootItemCandy') {
-                const candyType = (item as DracoNode.objects.FLootItemCandy).candyType;
-                const creature = strings.getCreature(DracoNode.enums.CreatureType[candyType]);
+                const candyType = (item as objects.FLootItemCandy).candyType;
+                const creature = strings.getCreature(enums.CreatureType[candyType]);
                 logger.debug(`  ${item.qty} ${creature} candies.`);
             } else if (item.__type === 'FLootItemItem') {
-                const itemType = (item as DracoNode.objects.FLootItemItem).item;
-                const type = DracoNode.enums.ItemType[itemType];
+                const itemType = (item as objects.FLootItemItem).item;
+                const type = enums.ItemType[itemType];
                 let dropItem = strings.getItem(type);
                 if (type.indexOf('EGG_KM_') === 0) {
                     dropItem = `${type.substr('EGG_KM_'.length)} km ` + strings.getItem('EGG');
@@ -177,10 +179,9 @@ export default class APIHelper {
             } else if (item.__type === 'FLootItemDust') {
                 logger.debug(`  ${item.qty} dust.`);
             } else if (item.__type === 'FLootItemBuff') {
-                logger.warn(item);
-                const buff = (item as DracoNode.objects.FLootItemBuff).buff;
-                const info = strings.get('key.buff.' + DracoNode.enums.BuffType[buff.type]);
-                logger.debug(` Buff received. ${info}`);
+                const buff = (item as objects.FLootItemBuff).buff;
+                const info = strings.get('key.buff.' + enums.BuffType[buff.type]);
+                logger.debug(`  Buff received. ${info}.`);
             } else {
                 logger.debug('Loot unhandled:');
                 logger.debug(JSON.stringify(item, null, 2));
@@ -189,7 +190,7 @@ export default class APIHelper {
     }
 
     async startingEvents() {
-        const client: DracoNode.Client = this.state.client;
+        const client: Client = this.state.client;
         for (let i = 0; i < 21; i++) {
             await client.event('LoadingScreenPercent', '100');
         }

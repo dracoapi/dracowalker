@@ -1,7 +1,7 @@
 require('dotenv').config({silent: true});
 
 import * as logger from 'winston';
-import * as DracoNode from 'draconode';
+import { Client, objects, enums } from 'draconode';
 import * as _ from 'lodash';
 import * as fs from 'mz/fs';
 import * as moment from 'moment';
@@ -13,6 +13,7 @@ import ProxyHelper from './lib/proxy';
 import Walker from './lib/walker';
 import Player from './lib/player';
 import SocketServer from './ui/socket.server';
+import Fight from './lib/fight';
 
 const strings = dracoText.load('english');
 const config = require('./lib/config').load();
@@ -39,7 +40,7 @@ const player = new Player(config, state);
 const walker = state.walker = new Walker(config, state);
 const socket = state.socket = new SocketServer(config, state);
 
-let client: DracoNode.Client;
+let client: Client;
 
 async function main() {
     logger.info('App starting...');
@@ -55,7 +56,7 @@ async function main() {
         }
         await socket.start();
 
-        client = new DracoNode.Client({
+        client = new Client({
             proxy: proxyhelper.proxy,
         });
         state.client = client;
@@ -81,11 +82,11 @@ async function main() {
         logger.info('Client started...');
 
         logger.debug('Get inventory...');
-        response = await client.getUserItems();
+        response = await client.inventory.getUserItems();
         apihelper.parse(response);
 
         logger.debug('Get creadex...');
-        response = await client.getCreadex();
+        response = await client.inventory.getCreadex();
         apihelper.parse(response);
 
         logger.debug('Get creatures...');
@@ -178,22 +179,22 @@ async function handlePendingActions() {
         } else if (todo.call === 'evolve_creature') {
             const response = await client.evolve(todo.creature, todo.to);
             apihelper.parse(response);
-            response.creature.display = strings.getCreature(DracoNode.enums.CreatureType[response.creature.name]);
+            response.creature.display = strings.getCreature(enums.CreatureType[response.creature.name]);
             logger.info('Creature evolve to ' + response.creature.display);
             await Bluebird.delay(config.delay.evolve * _.random(900, 1100));
 
         } else if (todo.call === 'drop_items') {
-            await client.discardItem(todo.id, todo.count);
+            await client.inventory.discardItem(todo.id, todo.count);
             const item = state.inventory.find(i => i.type === todo.id);
             item.count = Math.max(0, item.count - todo.count);
-            const name = strings.getItem(DracoNode.enums.ItemType[todo.id]);
+            const name = strings.getItem(enums.ItemType[todo.id]);
             logger.info(`Dropped ${todo.count} of ${name}`);
             await Bluebird.delay(config.delay.recycle * _.random(900, 1100));
 
         } else if (todo.call === 'open_egg') {
             const response = await client.openHatchedEgg(todo.incubatorId);
             apihelper.parse(response);
-            response.creature.display = strings.getCreature(DracoNode.enums.CreatureType[response.creature.name]);
+            response.creature.display = strings.getCreature(enums.CreatureType[response.creature.name]);
             logger.info('Egg hatched, received a ' + response.creature.display);
 
         } else {
@@ -214,7 +215,7 @@ async function mapRefresh(): Promise<void> {
     logger.debug('Map Refresh', state.pos);
     const pos = walker.fuzzedLocation(state.pos);
     const update = await client.getMapUpdate(pos.lat, pos.lng);
-    apihelper.parseMapUpdate(update);
+    const info = apihelper.parseMapUpdate(update);
 
     await client.call('ClientEventService', 'clientLogRecords', [ { __type: 'List<>', value: [] } ]);
 
@@ -224,14 +225,20 @@ async function mapRefresh(): Promise<void> {
     };
 
     await saveState();
-
     socket.sendBuildings();
-    await player.spinBuildings();
 
-    await player.openChests();
-
-    if (config.behavior.catch) {
-        await player.catchCreatures();
+    if (info.encounter && config.behavior.wildfight) {
+        const level = info.encounter.level / 2;
+        const name = strings.getCreature(enums.CreatureType[info.encounter.creatureName]);
+        logger.warn(`You're being attacked by a level ${level} ${name}!`);
+        const fight = new Fight(config, state);
+        await fight.fight(info.encounter);
+    } else {
+        await player.spinBuildings();
+        await player.openChests();
+        if (config.behavior.catch) {
+            await player.catchCreatures();
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as logger from 'winston';
 import * as Bluebird from 'bluebird';
-import * as DracoNode from 'draconode';
+import { Client, objects, enums } from 'draconode';
 import * as dracoText from 'dracotext';
 
 const strings = dracoText.load('english');
@@ -30,7 +30,7 @@ export default class Player {
     }
 
     async cleanInventory() {
-        const client: DracoNode.Client = this.state.client;
+        const client: Client = this.state.client;
         const items: any[] = this.state.inventory;
         const total = _.reduce(items, (sum, i) => sum + i.count, 0);
         if (total >= this.state.player.storage.items) {
@@ -43,9 +43,9 @@ export default class Player {
                 if (_.has(limits, item.type)) {
                     const drop = item.count - Math.min(item.count, limits[item.type]);
                     if (drop > 0) {
-                        const itemname = strings.getItem(DracoNode.enums.ItemType[item.type]);
-                        logger.debug('Drop %d of %s', drop, itemname);
-                        const response = await client.discardItem(item.type, drop);
+                        const itemname = strings.getItem(enums.ItemType[item.type]);
+                        logger.debug('  drop %d of %s', drop, itemname);
+                        const response = await client.inventory.discardItem(item.type, drop);
                         if (!response) {
                             logger.warn('Error dropping items');
                         } else {
@@ -59,11 +59,11 @@ export default class Player {
     }
 
     async spinBuildings() {
-        const client: DracoNode.Client = this.state.client;
+        const client: Client = this.state.client;
 
         const range = this.state.player.avatar.activationRadius * 0.9;
         let buildings: any[] = this.state.map.buildings;
-        buildings = buildings.filter(b => b.type === DracoNode.enums.BuildingType.STOP &&
+        buildings = buildings.filter(b => b.type === enums.BuildingType.STOP &&
                                           b.available && b.pitstop && !b.pitstop.cooldown &&
                                           this.distance(b) < range);
 
@@ -79,7 +79,7 @@ export default class Player {
                 const info = this.apihelper.parse(response);
 
                 // get inventory
-                response = await client.getUserItems();
+                response = await client.inventory.getUserItems();
                 this.apihelper.parse(response);
 
                 this.state.socket.sendVisiteBuilding(info.building);
@@ -100,26 +100,26 @@ export default class Player {
     }
 
     getThrowBall() {
-        const simple = this.state.inventory.find(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_SIMPLE);
+        const simple = this.state.inventory.find(x => x.type === enums.ItemType.MAGIC_BALL_SIMPLE);
         if (simple && simple.count > 0) {
-            return DracoNode.enums.ItemType.MAGIC_BALL_SIMPLE;
+            return enums.ItemType.MAGIC_BALL_SIMPLE;
         }
 
-        const normal = this.state.inventory.find(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_NORMAL);
+        const normal = this.state.inventory.find(x => x.type === enums.ItemType.MAGIC_BALL_NORMAL);
         if (normal && normal.count > 0) {
-            return DracoNode.enums.ItemType.MAGIC_BALL_NORMAL;
+            return enums.ItemType.MAGIC_BALL_NORMAL;
         }
 
-        const good = this.state.inventory.find(x => x.type === DracoNode.enums.ItemType.MAGIC_BALL_GOOD);
+        const good = this.state.inventory.find(x => x.type === enums.ItemType.MAGIC_BALL_GOOD);
         if (good && good.count > 0) {
-            return DracoNode.enums.ItemType.MAGIC_BALL_GOOD;
+            return enums.ItemType.MAGIC_BALL_GOOD;
         }
 
         return -1;
     }
 
     async catchCreatures() {
-        const client: DracoNode.Client = this.state.client;
+        const client: Client = this.state.client;
 
         const range = this.state.player.avatar.activationRadius * 0.95;
         const wilds = this.state.map.creatures.wilds;
@@ -130,7 +130,7 @@ export default class Player {
             } else if (this.getThrowBall() < 0) {
                 logger.warn('Out of balls!');
             } else if (this.distance(creature) < range) {
-                const name = strings.getCreature(DracoNode.enums.CreatureType[creature.name]);
+                const name = strings.getCreature(enums.CreatureType[creature.name]);
                 logger.debug('Try catching a wild ' + name);
 
                 await client.encounter(creature.id);
@@ -171,7 +171,7 @@ export default class Player {
     async autoReleaseCreature(creature) {
         if (!this.config.behavior.autorelease) return;
 
-        const creatures: DracoNode.objects.FUserCreature[] = this.state.creatures;
+        const creatures: objects.FUserCreature[] = this.state.creatures;
         const better = creatures.find(c =>
             c.name === creature.name &&
             (c.attackValue + c.staminaValue) > (creature.attackValue + creature.staminaValue) &&
@@ -179,7 +179,7 @@ export default class Player {
         );
         if (better) {
             await Bluebird.delay(this.config.delay.release * _.random(900, 1100));
-            const client: DracoNode.Client = this.state.client;
+            const client: Client = this.state.client;
             const response = await client.releaseCreatures([ creature.id ]);
             this.apihelper.parse(response);
             logger.info(`${creature.display} released.`);
@@ -191,18 +191,18 @@ export default class Player {
 
     async evolveperfect() {
         if (!this.config.behavior.evolveperfect) return;
-        const creatures: DracoNode.objects.FUserCreature[] = this.state.creatures;
+        const creatures: objects.FUserCreature[] = this.state.creatures;
         for (const creature of creatures) {
             if (creature.attackValue >= 5 && creature.staminaValue >= 5 && creature.possibleEvolutions.size > 0) {
                 const to = creature.possibleEvolutions.keys().next().value;
                 const candiesNeeded = creature.possibleEvolutions.get(to);
                 const candies = this.state.player.avatar.candies.get(creature.candyType);
                 if (candies >= candiesNeeded) {
-                    const client: DracoNode.Client = this.state.client;
+                    const client: Client = this.state.client;
                     const response = await client.evolve(creature.id, to);
                     this.apihelper.parse(response);
-                    const from = (<any>creature).display || strings.getCreature(DracoNode.enums.CreatureType[creature.name]);
-                    response.creature.display = strings.getCreature(DracoNode.enums.CreatureType[response.creature.name]);
+                    const from = (<any>creature).display || strings.getCreature(enums.CreatureType[creature.name]);
+                    response.creature.display = strings.getCreature(enums.CreatureType[response.creature.name]);
                     logger.info(`Perfect ${from} evolved to ${response.creature.display}`);
                     await Bluebird.delay(this.config.delay.evolve * _.random(900, 1100));
                 }
@@ -211,24 +211,24 @@ export default class Player {
     }
 
     async getInventory() {
-        const client: DracoNode.Client = this.state.client;
-        const response = await client.getUserItems();
+        const client: Client = this.state.client;
+        const response = await client.inventory.getUserItems();
         this.apihelper.parse(response);
         for (const item of this.state.inventory) {
             if (!item.display) {
-                item.display = strings.getItem(DracoNode.enums.ItemType[item.type]);
+                item.display = strings.getItem(enums.ItemType[item.type]);
             }
         }
         return this.state.inventory;
     }
 
     async getCreatures() {
-        const client: DracoNode.Client = this.state.client;
-        const response = await client.getUserCreatures();
+        const client: Client = this.state.client;
+        const response = await client.inventory.getUserCreatures();
         this.apihelper.parse(response);
         for (const creature of this.state.creatures) {
             if (!creature.display) {
-                creature.display = strings.getCreature(DracoNode.enums.CreatureType[creature.name]);
+                creature.display = strings.getCreature(enums.CreatureType[creature.name]);
             }
         }
         return this.state.creatures;
@@ -240,7 +240,7 @@ export default class Player {
         let eggs = hatchInfo.eggs.filter(e => e.incubatorId === null && !e.isEggForRoost);
         if (freeIncub.length > 0 && eggs.length > 0) {
             logger.debug('Dispatch incubators');
-            const client: DracoNode.Client = this.state.client;
+            const client: Client = this.state.client;
             eggs = _.orderBy(eggs, 'totalDistance', 'asc');
             freeIncub = _.orderBy(freeIncub, 'usagesLeft', 'desc');
             const max = Math.min(eggs.length, freeIncub.length);
@@ -252,14 +252,14 @@ export default class Player {
     }
 
     async getHatchingInfo() {
-        const client: DracoNode.Client = this.state.client;
+        const client: Client = this.state.client;
         const response = await client.getHatchingInfo();
         this.apihelper.parse(response);
         return response;
     }
 
     async openChests() {
-        const client: DracoNode.Client = this.state.client;
+        const client: Client = this.state.client;
         for (const chest of this.state.map.chests) {
             const response = await client.openChest(chest);
             this.apihelper.parse(response);

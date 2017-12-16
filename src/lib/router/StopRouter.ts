@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as logger from 'winston';
-import * as DracoNode from 'draconode';
+import { enums } from 'draconode';
 import { BaseRouter, Target } from './BaseRouter';
 
 export default class StopRouter extends BaseRouter {
@@ -32,7 +32,7 @@ export default class StopRouter extends BaseRouter {
 
         // get stop builing not already visited or in cooldown
         let buildings: any[] = this.state.map.buildings;
-        buildings = buildings.filter(b => b.type === DracoNode.enums.BuildingType.STOP &&
+        buildings = buildings.filter(b => b.type === enums.BuildingType.STOP &&
                                             b.available && b.pitstop && !b.pitstop.cooldown &&
                                             this.state.path.visited.indexOf(b.id) < 0);
 
