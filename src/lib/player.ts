@@ -9,6 +9,7 @@ const strings = dracoText.load('english');
 const geolib = require('geolib');
 
 import APIHelper from './api';
+import MODRouter from './router/MODRouter';
 
 /**
  * A player, that catch, spin...
@@ -96,8 +97,14 @@ export default class Player {
                     this.apihelper.parse(response);
                 } else if (building.type === enums.BuildingType.PORTAL) {
                     logger.info('Portal used!');
-                    await this.dispatchRoostEggs();
-                    await this.leaveDungeon();
+                    const mod = this.state.map.buildings.find(b => b.type === enums.BuildingType.ROOST);
+                    if (mod) {
+                        logger.info('Found a mother of dragons, go there.');
+                        this.state.walker.router = new MODRouter(this.config, this.state, mod, this);
+                    } else {
+                        logger.info('No mother of dragons...');
+                        await this.leaveDungeon();
+                    }
                 }
 
                 this.state.path.visited.push(building.id);
