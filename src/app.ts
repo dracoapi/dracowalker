@@ -119,7 +119,7 @@ async function main() {
                     logger.error(e.details);
                 }
             }
-        }, 5 * 60 * 1000);
+        }, 4 * 60 * 1000);
 
     } catch (e) {
         if (e.message === 'Invalid proxy.' ||
@@ -194,7 +194,7 @@ async function handlePendingActions() {
             await Bluebird.delay(config.delay.recycle * _.random(900, 1100));
 
         } else if (todo.call === 'open_egg') {
-            const response = await client.openHatchedEgg(todo.incubatorId);
+            const response = await client.eggs.openHatchedEgg(todo.incubatorId);
             apihelper.parse(response);
             response.creature.display = strings.getCreature(enums.CreatureType[response.creature.name]);
             logger.info('Egg hatched, received a ' + response.creature.display);
