@@ -61,6 +61,18 @@ export default class APIHelper {
                         Object.assign(building, item);
                     }
                     info.building = item;
+                } else if (item.__type === 'FBuildingUpdate') {
+                    const buildingUpdate = item as objects.FBuildingUpdate;
+                    let buildings = [];
+                    buildings = Array.from(buildingUpdate.tileBuildings.values());
+                    buildings = buildings.filter(t => t.buildings).map(t => t.buildings);
+                    buildings = _.union.apply(null, buildings);
+                    buildings = _.uniqBy(buildings, 'id');
+                    this.state.map.buildings = buildings;
+                } else if (item.__type === 'FCreatureUpdate') {
+                    this.state.map.creatures = item;
+                } else if (item.__type === 'FDungeonUpdate') {
+                    // nothing?
                 } else {
                     logger.warn('Unhandled fupdate item: ' + item.__type);
                 }
@@ -95,53 +107,70 @@ export default class APIHelper {
         const info: any = {};
         if (!response) return info;
         if (response.__type === 'FUpdate') {
-            // buildings
-            let buildings = [];
-            const buildingUpdate = response.items.find(o => o.__type === 'FBuildingUpdate');
-            if (buildingUpdate) {
-                buildings = Array.from(buildingUpdate.tileBuildings.values());
-                buildings = buildings.filter(t => t.buildings).map(t => t.buildings);
-                buildings = _.union.apply(null, buildings);
-                buildings = _.uniqBy(buildings, 'id');
-            }
-
-            // avatar
-            const avatar: objects.FAvaUpdate = response.items.find(o => o.__type === 'FAvaUpdate');
-            this.state.player.avatar = avatar;
-            this.state.player.storage.creatures = this.state.player.avatar.creatureStorageSize;
-
-            // eggs
-            const hatchInfo = response.items.find(o => o.__type === 'FHatchedEggs');
-            if (hatchInfo && hatchInfo.incubatorId) {
-                const egg: objects.FEgg = hatchInfo.egg;
-                if (egg.passedDistance >= egg.totalDistance) {
-                    // open it in a few
-                    this.state.todo.push({
-                        call: 'open_egg',
-                        incubatorId: egg.incubatorId,
-                    });
+            this.state.map = {};
+            for (const item of response.items) {
+                if (item.__type === 'FBuildingUpdate') {
+                    // buildings
+                    const buildingUpdate = item as objects.FBuildingUpdate;
+                    if (buildingUpdate) {
+                        let buildings = [];
+                        buildings = Array.from(buildingUpdate.tileBuildings.values());
+                        buildings = buildings.filter(t => t.buildings).map(t => t.buildings);
+                        buildings = _.union.apply(null, buildings);
+                        buildings = _.uniqBy(buildings, 'id');
+                        this.state.map.buildings = buildings;
+                    }
+                } else if (item.__type === 'FAvaUpdate') {
+                    // avatar
+                    const avatar = item as objects.FAvaUpdate;
+                    this.state.player.avatar = avatar;
+                    this.state.player.storage.creatures = this.state.player.avatar.creatureStorageSize;
+                } else if (item.__type === 'FHatchedEggs') {
+                    // eggs
+                    const hatchInfo = item as objects.FHatchedEggs;
+                    if (hatchInfo && hatchInfo.incubatorId) {
+                        const egg: objects.FEgg = hatchInfo.egg;
+                        if (egg.passedDistance >= egg.totalDistance) {
+                            // open it in a few
+                            this.state.todo.push({
+                                call: 'open_egg',
+                                incubatorId: egg.incubatorId,
+                            });
+                        }
+                    }
+                    this.state.map.hatched = hatchInfo;
+                } else if (item.__type === 'FAllianceChooseRequest') {
+                    // alliance
+                    const chooseAlliance = item as objects.FAllianceChooseRequest;
+                    if (chooseAlliance) {
+                        const alliance = chooseAlliance.recommendedType || enums.AllianceType.BLUE;
+                        this.state.todo.push({
+                            call: 'select_alliance',
+                            bonus: chooseAlliance.bonus,
+                            alliance,
+                        });
+                    }
+                } else if (item.__type === 'FChestUpdate') {
+                    this.state.map.chests = item.chests;
+                } else if (item.__type === 'FCreatureUpdate') {
+                    this.state.map.creatures = item;
+                } else if (item.__type === 'FEncounterDetails') {
+                    // wild encounter
+                    info.encounter = item;
+                } else if (item.__type === 'FArenaWithBattleUpdate') {
+                    // todo
+                } else if (item.__type === 'FDungeonUpdate') {
+                    // nothing?
+                } else {
+                    logger.warn('Unhandled object in map update: ' + item.__type);
                 }
             }
-
-            // save state
-            this.state.map = {
-                creatures: response.items.find(o => o.__type === 'FCreatureUpdate'),
-                hatched: response.items.find(o => o.__type === 'FHatchedEggs'),
-                chests: response.items.find(o => o.__type === 'FChestUpdate').chests,
-                buildings,
-            };
 
             if (this.config.database.save) {
                 const wilds = this.state.map.creatures.wilds;
                 for (const wild of wilds) {
                     database.save('wild', wild);
                 }
-            }
-
-            // wild encounter
-            const encounter = response.items.find(o => o.__type === 'FEncounterDetails');
-            if (encounter) {
-                info.encounter = encounter;
             }
         }
 

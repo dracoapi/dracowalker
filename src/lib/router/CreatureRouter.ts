@@ -58,8 +58,9 @@ export default class CreatureRouter extends BaseRouter {
 
     findClosestStop() {
         let buildings: any[] = this.state.map.buildings;
-        buildings = buildings.filter(b => b.type === enums.BuildingType.STOP &&
-            b.available && b.pitstop && !b.pitstop.cooldown &&
+        buildings = buildings.filter(b =>  b.available &&
+            [enums.BuildingType.STOP, enums.BuildingType.DUNGEON_STOP].includes(b.typ) &&
+            b.pitstop && !b.pitstop.cooldown &&
             this.state.path.visited.indexOf(b.id) < 0);
 
         if (buildings.length > 1) {

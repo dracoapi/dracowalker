@@ -44,10 +44,10 @@ module.exports.load = function() {
 
         },
         delay: {
-            spin: 5,
+            spin: 1,
             encounter: 1.5,
             catch: 3,
-            incubator: 3,
+            incubator: 2.5,
             levelUp: 2,
             release: 0.1,
             evolve: 3,

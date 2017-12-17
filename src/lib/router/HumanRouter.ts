@@ -11,10 +11,12 @@ export default class HumanRouter extends BaseRouter {
     async generatePath() {
         const state = this.state;
         const target = await this.findNextTarget();
-        if (target && (!state.path.target || target.lat !== state.path.target.lat || target.lng !== state.path.target.lng)) {
-            state.path.target = target;
-            await this.generateWaypoint(target);
-            return state.path.waypoints;
+        if (target) {
+            if (this.state.path.waypoints.length === 0 || (!state.path.target || target.lat !== state.path.target.lat || target.lng !== state.path.target.lng)) {
+                state.path.target = target;
+                await this.generateWaypoint(target);
+                return state.path.waypoints;
+            }
         }
 
         return null;
@@ -30,11 +32,11 @@ export default class HumanRouter extends BaseRouter {
 
         // if not enough balls, find a stop to spin
         if (ballCount < 5) {
-            const stop = this.findClosestStop();
+            const stop = this.findClosestBuilding();
             if (stop) return stop;
         }
 
-        const stop = this.findClosestStop();
+        const stop = this.findClosestBuilding();
         const creature = this.findClosestCreature();
         const chest = this.findClosestChest();
 
@@ -71,10 +73,11 @@ export default class HumanRouter extends BaseRouter {
         return null;
     }
 
-    findClosestStop() {
+    findClosestBuilding() {
         let buildings: any[] = this.state.map.buildings;
-        buildings = buildings.filter(b => b.type === enums.BuildingType.STOP &&
-            b.available && b.pitstop && !b.pitstop.cooldown &&
+        const types = [ enums.BuildingType.STOP, enums.BuildingType.PORTAL, enums.BuildingType.DUNGEON_STOP ];
+        buildings = buildings.filter(b => types.includes(b.type) && b.available &&
+            (!b.pitstop || (b.pitstop && !b.pitstop.cooldown)) &&
             this.state.path.visited.indexOf(b.id) < 0);
 
         if (buildings.length > 1) {

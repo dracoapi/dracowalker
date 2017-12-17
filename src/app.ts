@@ -1,7 +1,7 @@
 require('dotenv').config({silent: true});
 
 import * as logger from 'winston';
-import { Client, objects, enums } from 'draconode';
+import { Client, enums } from 'draconode';
 import * as _ from 'lodash';
 import * as fs from 'mz/fs';
 import * as moment from 'moment';
@@ -106,6 +106,8 @@ async function main() {
         // update position every second
         setTimeout(updatePos, 1000);
 
+        await player.leaveDungeon();
+
         // check incubators every 5 min
         player.dispatchIncubators();
         setInterval(async () => {
@@ -196,6 +198,10 @@ async function handlePendingActions() {
             apihelper.parse(response);
             response.creature.display = strings.getCreature(enums.CreatureType[response.creature.name]);
             logger.info('Egg hatched, received a ' + response.creature.display);
+
+        } else if (todo.call === 'select_alliance') {
+            await client.selectAlliance(todo.alliance, todo.bonus);
+            logger.info('Alliance selected, you are now %d.', enums.AllianceType[todo.alliance]);
 
         } else {
             logger.warn('Unhandled todo: ' + todo.call);

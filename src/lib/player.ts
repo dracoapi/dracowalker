@@ -60,34 +60,47 @@ export default class Player {
 
     async spinBuildings() {
         const client: Client = this.state.client;
+        const types = [ enums.BuildingType.STOP, enums.BuildingType.PORTAL, enums.BuildingType.DUNGEON_STOP ];
 
         const range = this.state.player.avatar.activationRadius * 0.9;
         let buildings: any[] = this.state.map.buildings;
-        buildings = buildings.filter(b => b.type === enums.BuildingType.STOP &&
-                                          b.available && b.pitstop && !b.pitstop.cooldown &&
+        buildings = buildings.filter(b => types.includes(b.type) &&
+                                          b.available &&
+                                          (!b.pitstop || (b.pitstop && !b.pitstop.cooldown)) &&
                                           this.distance(b) < range);
 
-        await Bluebird.map(buildings, async stop => {
-            logger.debug('Use stop %s', stop.id);
+        await Bluebird.map(buildings, async building => {
+            logger.debug('Use building %s', building.id);
             try {
-                if (this.distance(stop) >= 0.50 * range) return;
+                if (this.distance(building) >= 0.50 * range) return;
+                if (building.type === enums.BuildingType.PORTAL) {
+                    // if already in a dungeon, ignore portal
+                    if (this.state.player.avatar.dungeonId) return;
+                    // if already visited, ignore
+                    if (this.state.path.visited.includes(building.id)) return;
+                }
+                if (this.state.player.avatar.dungeonId && building.type === enums.BuildingType.PORTAL) return;
 
                 // spin
                 let response = await client.useBuilding(this.state.pos.lat, this.state.pos.lng,
-                                                        stop.id,
-                                                        stop.coords.latitude, stop.coords.longitude);
+                                                        building.id,
+                                                        building.coords.latitude, building.coords.longitude);
                 const info = this.apihelper.parse(response);
+                if (info.building) {
+                    this.state.socket.sendVisiteBuilding(info.building);
 
-                // get inventory
-                response = await client.inventory.getUserItems();
-                this.apihelper.parse(response);
+                    logger.info('Stop spun!');
+                    // get inventory
+                    await Bluebird.delay(this.config.delay.spin * _.random(900, 1100));
+                    response = await client.inventory.getUserItems();
+                    this.apihelper.parse(response);
+                } else if (building.type === enums.BuildingType.PORTAL) {
+                    logger.info('Portal used!');
+                    await this.dispatchRoostEggs();
+                    await this.leaveDungeon();
+                }
 
-                this.state.socket.sendVisiteBuilding(info.building);
-
-                logger.info('Building spun!');
-
-                this.state.path.visited.push(stop.id);
-
+                this.state.path.visited.push(building.id);
                 await Bluebird.delay(this.config.delay.spin * _.random(900, 1100));
             } catch (e) {
                 logger.error('Unable to spin');
@@ -133,37 +146,39 @@ export default class Player {
                 const name = strings.getCreature(enums.CreatureType[creature.name]);
                 logger.debug('Try catching a wild ' + name);
 
-                await client.encounter(creature.id);
-                let response: any = {};
-                let tries = 3;
-                while (!response.caught && !response.runAway && (tries-- > 0)) {
-                    const ball = this.getThrowBall();
-                    if (ball < 0) {
-                        logger.warn('No more ball to throw.');
-                        break;
+                const info = await client.encounter(creature.id);
+                if (info && !info.isCreatureStorageFull) {
+                    let response: any = {};
+                    let tries = 3;
+                    while (!response.caught && !response.runAway && (tries-- > 0)) {
+                        const ball = this.getThrowBall();
+                        if (ball < 0) {
+                            logger.warn('No more ball to throw.');
+                            break;
+                        }
+                        await client.delay(this.config.delay.encouter * _.random(900, 1100));
+                        response = await client.catch(creature.id,
+                                                    ball,
+                                                    0.5 + Math.random() * 0.5,
+                                                    Math.random() >= 0.5);
+                        this.apihelper.parse(response);
+                        this.state.inventory.find(i => i.type === ball).count--;
                     }
-                    await client.delay(this.config.delay.encouter * _.random(900, 1100));
-                    response = await client.catch(creature.id,
-                                                  ball,
-                                                  0.5 + Math.random() * 0.5,
-                                                  Math.random() >= 0.5);
-                    this.apihelper.parse(response);
-                    this.state.inventory.find(i => i.type === ball).count--;
-                }
 
-                if (response.caught) {
-                    logger.info(`${name} caught!`);
-                    const creature = response.userCreature;
-                    creature.display = name;
-                    creature.ball = response.ballType;
-                    this.state.socket.sendCreatureCaught(creature);
-                    const release = this.autoReleaseCreature(creature);
-                    if (this.state.creatures && !release) {
-                        this.state.creatures.push(creature);
+                    if (response.caught) {
+                        logger.info(`${name} caught!`);
+                        const creature = response.userCreature;
+                        creature.display = name;
+                        creature.ball = response.ballType;
+                        this.state.socket.sendCreatureCaught(creature);
+                        const release = this.autoReleaseCreature(creature);
+                        if (this.state.creatures && !release) {
+                            this.state.creatures.push(creature);
+                        }
                     }
-                }
 
-                await Bluebird.delay(this.config.delay.catch * _.random(900, 1100));
+                    await Bluebird.delay(this.config.delay.catch * _.random(900, 1100));
+                }
             }
         }
     }
@@ -234,6 +249,39 @@ export default class Player {
         return this.state.creatures;
     }
 
+    async dispatchRoostEggs() {
+        if (!this.state.player.avatar.dungeonId) return;
+        try {
+            const mod = this.state.map.buildings.find(b => b.type === enums.BuildingType.ROOST);
+            if (mod) {
+                const hatchInfo = await this.getHatchingInfo();
+                const roost = hatchInfo.eggs.filter(e => e.isEggForRoost);
+
+                // if some already hatching, move along (1 is max?)
+                if (roost.length === 0 || roost.some(e => e.isHatching)) return;
+
+                logger.info('Incube egg in mother of dragons.');
+                const egg = roost[0] as objects.FEgg;
+                const client: Client = this.state.client;
+                const req = new objects.FBuildingRequest({
+                    coords: new objects.GeoCoords({
+                        latitude: this.state.pos.lat,
+                        longitude: this.state.pos.lng,
+                    }),
+                    dungeonId: this.state.player.avatar.dungeonId,
+                    id: mod.id,
+                });
+                await client.eggs.startHatchingEggInRoost(egg.id, req, 0);
+                await client.delay(this.config.delay.incubator * _.random(900, 1100));
+            }
+        } catch (e) {
+            logger.error(e);
+            if (e.details && e.details.constructor.name !== 'IncomingMessage') {
+                logger.error(e.details);
+            }
+        }
+    }
+
     async dispatchIncubators() {
         const hatchInfo = await this.getHatchingInfo();
         let freeIncub = hatchInfo.incubators.filter(i => i.eggId === null);
@@ -246,14 +294,15 @@ export default class Player {
             const max = Math.min(eggs.length, freeIncub.length);
             for (let i = 0; i < max; i++) {
                 logger.info(`Start hatching a ${eggs[i].totalDistance / 1000}km egg.`);
-                await client.startHatchingEgg(eggs[i].id, freeIncub[i].incubatorId);
+                await client.eggs.startHatchingEgg(eggs[i].id, freeIncub[i].incubatorId);
+                await client.delay(this.config.delay.incubator * _.random(900, 1100));
             }
         }
     }
 
     async getHatchingInfo() {
         const client: Client = this.state.client;
-        const response = await client.getHatchingInfo();
+        const response = await client.eggs.getHatchingInfo();
         this.apihelper.parse(response);
         return response;
     }
@@ -264,6 +313,16 @@ export default class Player {
             const response = await client.openChest(chest);
             this.apihelper.parse(response);
             logger.info('Chest found!');
+        }
+    }
+
+    async leaveDungeon() {
+        const client: Client = this.state.client;
+        while (this.state.player.avatar.dungeonId) {
+            logger.info('Leaving dungeon');
+            await client.delay(2000);
+            const response = await client.leaveDungeon(this.state.pos.lat, this.state.pos.lng);
+            this.apihelper.parse(response);
         }
     }
 

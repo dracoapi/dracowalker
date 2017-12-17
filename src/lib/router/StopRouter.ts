@@ -32,9 +32,10 @@ export default class StopRouter extends BaseRouter {
 
         // get stop builing not already visited or in cooldown
         let buildings: any[] = this.state.map.buildings;
-        buildings = buildings.filter(b => b.type === enums.BuildingType.STOP &&
-                                            b.available && b.pitstop && !b.pitstop.cooldown &&
-                                            this.state.path.visited.indexOf(b.id) < 0);
+        buildings = buildings.filter(b => b.available &&
+                                          [enums.BuildingType.STOP, enums.BuildingType.DUNGEON_STOP].includes(b.type) &&
+                                          b.pitstop && !b.pitstop.cooldown &&
+                                          this.state.path.visited.indexOf(b.id) < 0);
 
         if (buildings.length > 1) {
             // order by distance
