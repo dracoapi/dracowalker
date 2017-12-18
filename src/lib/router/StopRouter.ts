@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import * as logger from 'winston';
 import { enums } from 'draconode';
 import { BaseRouter, Target } from './BaseRouter';
 
@@ -14,8 +13,6 @@ export default class StopRouter extends BaseRouter {
     }
 
     async generatePath() {
-        logger.debug('Get new path.');
-
         const state = this.state;
         const target = state.path.target = await this.findNextTarget();
 

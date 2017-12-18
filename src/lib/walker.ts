@@ -63,23 +63,32 @@ export default class Walker {
 
         // move towards next target
         const dest = this.state.path.waypoints[0];
+        if (!dest.lat && !dest.lng) {
+            this.state.path.waypoints.shift();
+            return;
+        }
+
         let speed = this.config.speed;
         speed += (Math.random() - 0.5) * speed * 0.1;
         if (speed <= 0) return;
 
         const speedms = speed / 3.6;
         let dist = this.distance(dest);
-        const step = dist / speedms;
+        if (dist > 0) {
+            const step = dist / speedms;
 
-        const newpos = {
-            lat: this.state.pos.lat + (dest.lat - this.state.pos.lat) / step,
-            lng: this.state.pos.lng + (dest.lng - this.state.pos.lng) / step,
-        };
-        this.state.pos = this.fuzzedLocation(newpos);
+            const newpos = {
+                lat: this.state.pos.lat + (dest.lat - this.state.pos.lat) / step,
+                lng: this.state.pos.lng + (dest.lng - this.state.pos.lng) / step,
+            };
+            this.state.pos = this.fuzzedLocation(newpos);
 
-        // if we get close to the next point, remove it from the targets
-        dist = this.distance(this.state.path.waypoints[0]);
-        if (dist < 5) this.state.path.waypoints.shift();
+            // if we get close to the next point, remove it from the targets
+            dist = this.distance(this.state.path.waypoints[0]);
+            if (dist < 5) this.state.path.waypoints.shift();
+        } else {
+            this.state.path.waypoints.shift();
+        }
     }
 
     /**

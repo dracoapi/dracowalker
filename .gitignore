@@ -4,4 +4,3 @@ user*.json
 .env
 bin
 data/*
-package-lock.json

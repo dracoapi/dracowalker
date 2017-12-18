@@ -57,6 +57,8 @@ export default class HumanRouter extends BaseRouter {
 
     findClosestCreature() {
         let allCreatures = this.state.map.creatures.wilds.concat(this.state.map.creatures.inRadar);
+        if (!allCreatures) return null;
+
         allCreatures = _.uniqBy(allCreatures, 'id');
         if (allCreatures.length > 0) {
             for (const creature of allCreatures) {
@@ -75,6 +77,8 @@ export default class HumanRouter extends BaseRouter {
 
     findClosestBuilding() {
         let buildings: any[] = this.state.map.buildings;
+        if (!buildings) return null;
+
         const types = [ enums.BuildingType.STOP, enums.BuildingType.PORTAL, enums.BuildingType.DUNGEON_STOP ];
         buildings = buildings.filter(b => types.includes(b.type) && b.available &&
             (!b.pitstop || (b.pitstop && !b.pitstop.cooldown)) &&
