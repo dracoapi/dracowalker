@@ -157,10 +157,19 @@ async function updatePos() {
             // or if it's been enough time since last getMapUpdate
             await mapRefresh();
         }
+        state.errors = 0;
     } catch (e) {
         logger.error(e);
-        if (e.details && e.details.constructor.name !== 'IncomingMessage') {
+        if (e.details && e.details.__type === 'FServiceError') {
             logger.error(e.details);
+            if (e.details.cause === 'SESSION_GONE') {
+                process.exit();
+            }
+        }
+        state.errors++;
+        if (state.errors === 10) {
+            logger.error('Too much errors, aborting.');
+            process.exit();
         }
     }
 

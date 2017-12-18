@@ -63,6 +63,7 @@ module.exports.load = function() {
             level: 'info',
             file: 'dracowalker.log',
         },
+        errors: 0,
     };
 
     try {
