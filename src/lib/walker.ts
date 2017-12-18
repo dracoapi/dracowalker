@@ -63,6 +63,11 @@ export default class Walker {
 
         // move towards next target
         const dest = this.state.path.waypoints[0];
+        if (!dest.lat && !dest.lng) {
+            this.state.path.waypoints.shift();
+            return;
+        }
+
         let speed = this.config.speed;
         speed += (Math.random() - 0.5) * speed * 0.1;
         if (speed <= 0) return;

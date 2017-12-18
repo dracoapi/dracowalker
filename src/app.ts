@@ -255,7 +255,7 @@ async function saveState() {
     delete lightstate.client;
     delete lightstate.socket;
     delete lightstate.walker;
-    await fs.writeFile('data/state.json', JSON.stringify(lightstate, null, 2));
+    await fs.writeFile(`data/${config.statename}.json`, JSON.stringify(lightstate, null, 2));
 }
 
 main();

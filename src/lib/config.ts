@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as logger from 'winston';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import * as path from 'path';
 
 import { enums } from 'draconode';
 
@@ -70,6 +71,8 @@ module.exports.load = function() {
 
     const argv = require('minimist')(process.argv.slice(2));
     const filename = argv.config || 'config.yaml';
+    config.name = path.basename(filename, '.yaml');
+    config.statename = `state${config.name.replace('config', '')}`;
 
     if (fs.existsSync(`data/${filename}`)) {
         const loaded = yaml.safeLoad(fs.readFileSync(`data/${filename}`, 'utf8'));
