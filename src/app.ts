@@ -201,7 +201,7 @@ async function handlePendingActions() {
 
         } else if (todo.call === 'select_alliance') {
             await client.selectAlliance(todo.alliance, todo.bonus);
-            logger.info('Alliance selected, you are now %d.', enums.AllianceType[todo.alliance]);
+            logger.info('Alliance selected, you are now %s.', enums.AllianceType[todo.alliance]);
 
         } else {
             logger.warn('Unhandled todo: ' + todo.call);
