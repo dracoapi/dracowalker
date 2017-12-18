@@ -22,7 +22,7 @@
     "js-yaml": "^3.10.0",
     "lodash": "^4.17.4",
     "minimist": "^1.2.0",
-    "moment": "^2.19.4",
+    "moment": "^2.20.0",
     "mz": "^2.7.0",
     "nedb-promise": "^2.0.1",
     "request": "^2.83.0",
