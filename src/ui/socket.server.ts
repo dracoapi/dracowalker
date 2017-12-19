@@ -118,6 +118,14 @@ export default class SocketServer {
         });
     }
 
+    sendCreatureEvolve(from, to) {
+        if (!this.config.ui.enabled) return;
+        this.io.emit('creature_evolved', {
+            from,
+            to,
+        });
+    }
+
     /**
      * Send a pokestop visited event to connected clients
      * @param {object} building - the pokestop we've just visited
