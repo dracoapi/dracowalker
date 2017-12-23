@@ -33,8 +33,8 @@
     "yaml": "^0.3.0"
   },
   "pkg": {
-    "targets": {
+    "targets": [
       "node9-win-x64"
-    }
+    ]
   }
 }
