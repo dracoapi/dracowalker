@@ -109,6 +109,8 @@ module.exports.load = function() {
 
     if (!fs.existsSync(`data/${filename}`)) {
         logger.warn(`Config file ${filename} does not exists, using default.`);
+    } else {
+        logger.debug(`Using config file ${filename}.`);
     }
 
     fixInventoryLimitConfig(config);

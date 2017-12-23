@@ -8,3 +8,7 @@ install:
 
 deploy:
   skip_cleanup: true
+
+# branches:
+#   only:
+#   - build

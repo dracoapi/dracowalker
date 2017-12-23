@@ -7,6 +7,9 @@
   "engines": {
     "node": ">= 8"
   },
+  "scripts": {
+    "pack": "pkg package.json -o dist/dracowalker"
+  },
   "keywords": [],
   "author": "niico",
   "license": "MIT",
@@ -33,7 +36,12 @@
     "yaml": "^0.3.0"
   },
   "pkg": {
+    "scripts": [
+      "node_modules/dracotext/languages/generated.english.js"
+    ],
     "targets": [
+      "node9-linux-x64",
+      "node9-macos-x64",
       "node9-win-x64"
     ]
   }

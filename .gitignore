@@ -4,3 +4,4 @@ user*.json
 .env
 bin
 data/*
+dist/*
