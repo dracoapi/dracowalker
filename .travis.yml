@@ -1,0 +1,8 @@
+language: node_js
+
+install:
+  - npm i
+  - npm i -g pkg
+
+deploy:
+  skip_cleanup: true

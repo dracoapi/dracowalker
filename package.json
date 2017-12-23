@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "bin/app.js",
+  "bin": "bin/app.js",
   "engines": {
     "node": ">= 8"
   },
@@ -30,5 +31,10 @@
     "socket.io": "^2.0.4",
     "winston": "^2.4.0",
     "yaml": "^0.3.0"
+  },
+  "pkg": {
+    "targets": {
+      "node9-win-x64"
+    }
   }
 }
