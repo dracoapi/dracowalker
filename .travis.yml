@@ -3,9 +3,9 @@ node_js:
 - node
 
 install:
-- npm i
-- npm i -g pkg
-- npm i -g typescript
+- npm i --no-save
+- npm i -g pkg --no-save
+- npm i -g typescript --no-save
 
 script:
 - npm run build
@@ -15,8 +15,9 @@ deploy:
   provider: releases
   api_key:
     secure: cYiVJMAPYXMOH9UuaB+bgQQPdbgpfLWFnQDo7YAi1dr9OM7TiZMvH3DCOFcBY2yS3dtNmExJrZLTtsDIsJ8Zo3m6qU+qRerWm9fMB3wLqDSsWEZt69Ro2QyYTa6AwJBQ97hD5F3wlZ05ba8GHGafzLG6VGUMbuhugp2NyIVv9R6s4va0L9xDRCwEzf2mrdwUW5uNWbdj/numNbFgnOErDVPvEG87h7WPFQaOjN5MxtB5YO/zHsX1jugnXDfTWPMznjtzyVKFFD98R5Mez+af3Q10gHFuhFv0cV0ANjlnoVj5TFUoNoP52jhDFsuiO37bBvKgtpke4XgXhGjODT+LJE0PQh0Vnk3iXSDYHaafN2Q1KMfZe3Zti6QL71rKaExFXrUpzJlhOP2cPtIu6Bt3ZO/gHdc9L6BMeM50777SsDLC1pLwxcn4tl50h7OCRX8JAHyDr74lxF0UF2+PnjUeyOxJewsIiiUAHPYQXB+TdnJFW8wLGY1zD/YImaJqybitMAZ7+0CnF7fuJulrMSpAv2Lbf66biso/+2fk/PldDcKc6AIkZxuaE+2ecFAN1mPcISATVZcMwk7VHT+MRBdJJokzyqzFZzgavDmDvtJm3QTrPBQ6jaj0/timYH6zqsP+chf7GMX1ymSrXvThNFQg4eGZ63SfhV/3aDUWlsxrqjU=
-  file: dist/*
   file_glob: true
+  file: dist/*
+  skip_cleanup: true
   on:
     all_branches: true
     tags: true
