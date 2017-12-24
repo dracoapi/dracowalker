@@ -20,4 +20,3 @@ deploy:
   on:
     tags: true
     repo: dracoapi/dracowalker
-    branch: releases
