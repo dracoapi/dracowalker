@@ -18,6 +18,6 @@ deploy:
   file: dist/*
   file_glob: true
   on:
-    branch: release
-    # tags: true
+    branch: master
+    tags: true
     repo: dracoapi/dracowalker
