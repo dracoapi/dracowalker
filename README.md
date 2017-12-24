@@ -5,8 +5,12 @@ Bot that play Draconius GO using my [DracoNode API](https://github.com/dracoapi/
 It walks, spin and catch creatures. It can also clean inventory and hatch egg.  
 Not meant to be a fully functional bot, it's more a proof of concept of what can be done with the API.
 
+## Release
 
-## Install & Run
+See https://github.com/dracoapi/dracowalker/releases.  
+
+
+## Install from source & Run
 
 Need up to date [node](https://nodejs.org) and [typescript](https://typescriptlang.org)
 
