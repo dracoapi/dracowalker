@@ -6,6 +6,9 @@ install:
   - npm i
   - npm i -g pkg
 
+script:
+  - npm run pack
+
 deploy:
   skip_cleanup: true
 
