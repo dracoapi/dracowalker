@@ -5,8 +5,10 @@ node_js:
 install:
   - npm i
   - npm i -g pkg
+  - npm i -g typescript
 
 script:
+  - npm run build
   - npm run pack
 
 deploy:
