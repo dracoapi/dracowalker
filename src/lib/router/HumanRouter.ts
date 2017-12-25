@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { objects, enums } from 'draconode';
+import { enums } from 'draconode';
 import { BaseRouter, Target } from './BaseRouter';
 
 export default class HumanRouter extends BaseRouter {
