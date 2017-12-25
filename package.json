@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "tslint": "tslint -c tslint.json 'src/**/*.ts'",
     "pack": "pkg package.json -o dist/dracowalker"
   },
   "keywords": [],

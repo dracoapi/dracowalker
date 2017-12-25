@@ -6,9 +6,15 @@ install:
 - npm i --no-save
 - npm i -g pkg --no-save
 - npm i -g typescript --no-save
+- npm i -g tslint --no-save
+
+before_script:
+- npm run build
 
 script:
-- npm run build
+- npm run tslint
+
+before_deploy:
 - npm run pack
 
 deploy:
