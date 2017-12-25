@@ -46,12 +46,17 @@ export default class HumanRouter extends BaseRouter {
     findClosestChest() {
         if (this.state.map.chests.length <= 0) return null;
 
-        let chests: objects.FChest[] = this.state.map.chests;
+        let chests = this.state.map.chests;
+        for (const chest of chests) {
+            if (!chest.distance) chest.distance = this.distance(chest);
+        }
+
         chests = _.orderBy(chests, 'distance', 'asc');
         return new Target({
             id: chests[0].id,
             lat: chests[0].coords.latitude,
             lng: chests[0].coords.longitude,
+            distance: chests[0].distance,
         });
     }
 
@@ -70,6 +75,7 @@ export default class HumanRouter extends BaseRouter {
                 id: allCreatures[0].id,
                 lat: allCreatures[0].coords.latitude,
                 lng: allCreatures[0].coords.longitude,
+                distance: allCreatures[0].distance,
             });
         }
         return null;
@@ -95,6 +101,7 @@ export default class HumanRouter extends BaseRouter {
                 id: buildings[0].id,
                 lat: buildings[0].coords.latitude,
                 lng: buildings[0].coords.longitude,
+                distance: buildings[0].distance,
             });
         }
 

@@ -5,6 +5,7 @@ export class Target {
     id: string;
     lat: number;
     lng: number;
+    distance: number;
 
     public constructor(init?: Partial<Target>) {
         Object.assign(this, init);
