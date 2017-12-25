@@ -142,13 +142,22 @@ export default class APIHelper {
                 } else if (item.__type === 'FAllianceChooseRequest') {
                     // alliance
                     const chooseAlliance = item as objects.FAllianceChooseRequest;
-                    if (chooseAlliance) {
-                        const alliance = chooseAlliance.recommendedType || enums.AllianceType.BLUE;
-                        this.state.todo.push({
-                            call: 'select_alliance',
-                            bonus: chooseAlliance.bonus,
-                            alliance,
-                        });
+                    if (chooseAlliance && this.config.behavior.autoalliance) {
+                        let alliance = this.config.behavior.autoalliance;
+                        if (!Number.isInteger(+alliance)) {
+                            alliance = enums.AllianceType[alliance];
+                        }
+                        if (!Number.isInteger(alliance)) {
+                            logger.error('Invalid alliance choice', this.config.behavior.autoalliance);
+                        } else {
+                            this.state.todo.push({
+                                call: 'select_alliance',
+                                bonus: chooseAlliance.bonus,
+                                alliance,
+                            });
+                        }
+                    } else {
+                        logger.warn('Time to select an alliance, configure behavior.autoalliance to do it.');
                     }
                 } else if (item.__type === 'FChestUpdate') {
                     this.state.map.chests = item.chests;

@@ -1,4 +1,6 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/niicodev)
+![build](https://travis-ci.org/dracoapi/dracowalker.svg?branch=master)
+
 
 # DracoWalker
 Bot that play Draconius GO using my [DracoNode API](https://github.com/dracoapi/nodedracoapi).
