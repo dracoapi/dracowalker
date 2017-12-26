@@ -101,6 +101,7 @@ export default class ProxyHelper {
             await fs.writeFile('data/bad.proxies.json', JSON.stringify(this.badProxies, null, 2));
         }
 
+        if (!this.config.proxy) this.config.proxy = {};
         if (!this.config.proxy.url) {
             return true;
         }
