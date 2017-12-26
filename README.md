@@ -1,5 +1,5 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/niicodev)
-![build](https://travis-ci.org/dracoapi/dracowalker.svg?branch=master)
+[![Build Status](https://travis-ci.org/dracoapi/dracowalker.svg?branch=master)](https://travis-ci.org/dracoapi/dracowalker)
 
 
 # DracoWalker
