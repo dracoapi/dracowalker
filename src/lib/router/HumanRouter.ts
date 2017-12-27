@@ -39,7 +39,7 @@ export default class HumanRouter extends BaseRouter {
         const creature = this.findClosestCreature();
         const chest = this.findClosestChest();
 
-        return _.orderBy([stop, creature, chest].filter(o => o), 'distance', 'asc')[0];
+        return _.orderBy([stop, creature, chest].filter(o => o != null), 'distance', 'asc')[0];
     }
 
     findClosestChest() {
@@ -89,13 +89,10 @@ export default class HumanRouter extends BaseRouter {
             (!b.pitstop || (b.pitstop && !b.pitstop.cooldown)) &&
             (includeVisited || this.state.path.visited.indexOf(b.id) < 0));
 
-        if (buildings.length > 1) {
-            // order by distance
+        if (buildings.length > 0) {
             _.each(buildings, pk => pk.distance = this.distance(pk));
             buildings = _.orderBy(buildings, 'distance', 'asc');
-        }
 
-        if (buildings.length > 0) {
             return new Target({
                 id: buildings[0].id,
                 lat: buildings[0].coords.latitude,
