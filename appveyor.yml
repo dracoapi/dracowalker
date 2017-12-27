@@ -1,10 +1,12 @@
+init:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
 install:
 - ps: Install-Product node 9
 - node --version
 - npm i --no-save
 - npm i -g pkg --no-save
 - npm i -g typescript --no-save
-- npm i -g tslint --no-save
 
 build: off
 
