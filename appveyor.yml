@@ -6,7 +6,9 @@ install:
 - npm i -g typescript --no-save
 - npm i -g tslint --no-save
 
-build:
+build: off
+
+build_script:
 - npm run build
 - npm run pack
 
