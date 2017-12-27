@@ -38,7 +38,7 @@ module.exports.load = function() {
         behavior: {
             catch: true,
             followroads: true,
-            autorelease: true,
+            autorelease: false,
             evolveperfect: false,
         },
         inventory: {

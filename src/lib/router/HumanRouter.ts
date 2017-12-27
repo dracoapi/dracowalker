@@ -4,7 +4,6 @@ import { BaseRouter, Target } from './BaseRouter';
 
 export default class HumanRouter extends BaseRouter {
     async checkPath(): Promise<Target[]> {
-        // generate a new path every few seconds
         return await this.generatePath();
     }
 
@@ -12,7 +11,7 @@ export default class HumanRouter extends BaseRouter {
         const state = this.state;
         const target = await this.findNextTarget();
         if (target) {
-            if (this.state.path.waypoints.length === 0 || (!state.path.target || target.lat !== state.path.target.lat || target.lng !== state.path.target.lng)) {
+            if (state.path.waypoints.length === 0 || (!state.path.target || target.lat !== state.path.target.lat || target.lng !== state.path.target.lng)) {
                 state.path.target = target;
                 await this.generateWaypoint(target);
                 return state.path.waypoints;
@@ -32,7 +31,7 @@ export default class HumanRouter extends BaseRouter {
 
         // if not enough balls, find a stop to spin
         if (ballCount < 5) {
-            const stop = this.findClosestBuilding();
+            const stop = this.findClosestBuilding(true);
             if (stop) return stop;
         }
 
@@ -81,14 +80,14 @@ export default class HumanRouter extends BaseRouter {
         return null;
     }
 
-    findClosestBuilding() {
+    findClosestBuilding(includeVisited = false) {
         let buildings: any[] = this.state.map.buildings;
         if (!buildings) return null;
 
         const types = [ enums.BuildingType.STOP, enums.BuildingType.PORTAL, enums.BuildingType.DUNGEON_STOP ];
         buildings = buildings.filter(b => types.includes(b.type) && b.available &&
             (!b.pitstop || (b.pitstop && !b.pitstop.cooldown)) &&
-            this.state.path.visited.indexOf(b.id) < 0);
+            (includeVisited || this.state.path.visited.indexOf(b.id) < 0));
 
         if (buildings.length > 1) {
             // order by distance
