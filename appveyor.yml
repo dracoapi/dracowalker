@@ -4,6 +4,7 @@ install:
 - npm i --no-save
 - npm i -g pkg --no-save
 - npm i -g typescript --no-save
+- set PATH=%APPDATA%\npm;%PATH%
 
 build: off
 
