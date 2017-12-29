@@ -31,13 +31,13 @@ export default class Walker {
         this.config = config;
         this.state = state;
         this.apihelper = new APIHelper(config, state);
-        if (config.router === 'human') {
+        if (config.router.name === 'human') {
             this.router = new HumanRouter(config, state);
-        } else if (config.router === 'stops') {
+        } else if (config.router.name === 'stops') {
             this.router = new StopRouter(config, state);
-        } else if (config.router === 'stand') {
+        } else if (config.router.name === 'stand') {
             this.router = new StadStillRouter(config, state);
-        } else if (config.router === 'creatures') {
+        } else if (config.router.name === 'creatures') {
             this.router = new CreatureRouter(config, state);
         } else {
             logger.warn(`Unknown router '${this.router}', using 'stops`);

@@ -31,7 +31,8 @@ export abstract class BaseRouter {
      */
     async generateWaypoint(target: Target) {
         const state = this.state;
-        if (this.config.behavior.followroads && this.distance(target) > 10) {
+        const followroads = this.config.router.followroads;
+        if (followroads && this.distance(target) > 10) {
             const gmAPI = new GoogleMapsAPI({
                 key: this.config.gmapKey,
             });

@@ -29,7 +29,10 @@ module.exports.load = function() {
             lat: 48.8456222,
             lng: 2.3364526,
         },
-        router: 'stops',
+        router: {
+            name: 'stops',
+            followroads: true,
+        },
         speed: 'auto',
         gmapKey: '',
         ui: {
@@ -37,7 +40,6 @@ module.exports.load = function() {
         },
         behavior: {
             catch: true,
-            followroads: true,
             autorelease: false,
             evolveperfect: false,
         },
@@ -78,6 +80,17 @@ module.exports.load = function() {
     if (fs.existsSync(`data/${filename}`)) {
         const loaded = yaml.safeLoad(fs.readFileSync(`data/${filename}`, 'utf8'));
         config = _.defaultsDeep(loaded, config);
+    }
+
+    if (typeof config.router === 'string') {
+        let followroads = true;
+        if (config.behavior.hasOwnProperty('followroads')) {
+            followroads = config.behavior.followroads;
+        }
+        config.router = {
+            name: config.router,
+            followroads,
+        };
     }
 
     if (process.env.VSCODE_CWD) {
