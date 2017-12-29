@@ -39,6 +39,11 @@ export default class HumanRouter extends BaseRouter {
         const creature = this.findClosestCreature();
         const chest = this.findClosestChest();
 
+        if (chest && this.config.router.prioritizechest) {
+            // if there is a chest in range, go for it
+            return chest;
+        }
+
         return _.orderBy([stop, creature, chest].filter(o => o != null), 'distance', 'asc')[0];
     }
 
@@ -63,8 +68,8 @@ export default class HumanRouter extends BaseRouter {
         let allCreatures = this.state.map.creatures.wilds.concat(this.state.map.creatures.inRadar);
         if (!allCreatures) return null;
 
-        allCreatures = _.uniqBy(allCreatures, 'id');
         if (allCreatures.length > 0) {
+            allCreatures = _.uniqBy(allCreatures, 'id');
             for (const creature of allCreatures) {
                 creature.distance = this.distance(creature);
             }
