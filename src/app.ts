@@ -109,18 +109,19 @@ async function main() {
         await player.leaveDungeon();
 
         // check incubators every 5 min
-        player.dispatchIncubators();
-        setInterval(async () => {
-            try {
-                await player.dispatchIncubators();
-            } catch (e) {
-                logger.error(e);
-                if (e.details && e.details.constructor.name !== 'IncomingMessage') {
-                    logger.error(e.details);
+        if (config.behavior.incubate) {
+            player.dispatchIncubators();
+            setInterval(async () => {
+                try {
+                    await player.dispatchIncubators();
+                } catch (e) {
+                    logger.error(e);
+                    if (e.details && e.details.constructor.name !== 'IncomingMessage') {
+                        logger.error(e.details);
+                    }
                 }
-            }
-        }, 4 * 60 * 1000);
-
+            }, 4 * 60 * 1000);
+        }
     } catch (e) {
         if (e.message === 'Invalid proxy.' ||
             (e.name === 'StatusCodeError' && e.statusCode === 403) || // ip banned

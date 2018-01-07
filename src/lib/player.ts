@@ -257,6 +257,7 @@ export default class Player {
     }
 
     async dispatchRoostEggs() {
+        if (!this.config.behavior.incubate) return;
         if (!this.state.player.avatar.dungeonId) return;
         try {
             const mod = this.state.map.buildings.find(b => b.type === enums.BuildingType.ROOST);
@@ -290,6 +291,7 @@ export default class Player {
     }
 
     async dispatchIncubators() {
+        if (!this.config.behavior.incubate) return;
         const hatchInfo = await this.getHatchingInfo();
         let freeIncub = hatchInfo.incubators.filter(i => i.eggId === null);
         let eggs = hatchInfo.eggs.filter(e => e.incubatorId === null && !e.isEggForRoost);

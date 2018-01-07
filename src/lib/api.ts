@@ -28,7 +28,6 @@ export default class APIHelper {
 
     parse(response) {
         if (!response) return null;
-
         const info: any = {};
 
         if (response.__type === 'FAuthData') {
@@ -95,7 +94,12 @@ export default class APIHelper {
         } else if (response.__type === 'FCreadex') {
             // nothing to do
         } else if (response.__type === 'FUserHatchingInfo') {
-            // nothing to do here
+            // save to state, usefull for debugging
+            const hatch = response as objects.FUserHatchingInfo;
+            this.state.hatch = {
+                incubators: hatch.incubators,
+                eggs: hatch.eggs,
+            };
         } else {
             logger.warn('Unhandled response: ' + response.__type);
         }

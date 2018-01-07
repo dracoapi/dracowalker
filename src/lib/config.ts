@@ -42,6 +42,7 @@ module.exports.load = function() {
             catch: true,
             autorelease: false,
             evolveperfect: false,
+            incubate: true,
         },
         inventory: {
 
