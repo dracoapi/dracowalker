@@ -1,6 +1,6 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/niicodev)
 [![Build Status](https://travis-ci.org/dracoapi/dracowalker.svg?branch=master)](https://travis-ci.org/dracoapi/dracowalker)
-![appveyor](https://ci.appveyor.com/api/projects/status/github/dracoapi/dracowalker?branch=master&svg=true)
+[![appveyor](https://ci.appveyor.com/api/projects/status/github/dracoapi/dracowalker?branch=master&svg=true)](https://ci.appveyor.com/project/niicojs/dracowalker/build/artifacts)
 
 
 # DracoWalker
@@ -12,6 +12,10 @@ Not meant to be a fully functional bot, it's more a proof of concept of what can
 
 See https://github.com/dracoapi/dracowalker/releases.  
 Dev build (unstable): https://ci.appveyor.com/project/niicojs/dracowalker/build/artifacts  
+
+
+Create a `data/config.yaml` to [configure](https://github.com/dracoapi/dracowalker/wiki/config) it.
+
 
 
 ## Install from source & Run
