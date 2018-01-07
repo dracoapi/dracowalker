@@ -149,7 +149,7 @@ export default class APIHelper {
                     if (chooseAlliance && this.config.behavior.autoalliance) {
                         let alliance = this.config.behavior.autoalliance;
                         if (!Number.isInteger(+alliance)) {
-                            alliance = enums.AllianceType[alliance];
+                            alliance = enums.AllianceType[alliance.toUpperCase()];
                         }
                         if (!Number.isInteger(alliance)) {
                             logger.error('Invalid alliance choice', this.config.behavior.autoalliance);
