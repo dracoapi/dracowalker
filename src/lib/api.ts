@@ -138,7 +138,7 @@ export default class APIHelper {
                             // open it in a few
                             this.state.todo.push({
                                 call: 'open_egg',
-                                incubatorId: egg.incubatorId,
+                                incubatorId: hatchInfo.incubatorId,
                             });
                         }
                     }
