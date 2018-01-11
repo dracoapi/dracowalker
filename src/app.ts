@@ -61,6 +61,10 @@ async function main() {
         });
         state.client = client;
 
+        logger.debug('Init walker...');
+        await walker.checkPath();
+        await walker.walk();
+
         logger.debug('Ping server...');
         await client.ping(true);
 

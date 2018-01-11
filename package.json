@@ -16,13 +16,12 @@
   "author": "niico",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "^8.5.2",
     "bluebird": "^3.5.1",
     "cheerio": "^1.0.0-rc.2",
     "dotenv": "^4.0.0",
     "draconode": "^0.2.3",
     "dracotext": "^1.0.1",
-    "fastify": "^0.36.0",
+    "fastify": "^0.38.0",
     "geolib": "^2.0.24",
     "googlemaps": "^1.12.0",
     "js-yaml": "^3.10.0",
@@ -35,7 +34,11 @@
     "request-promise-native": "^1.0.5",
     "socket.io": "^2.0.4",
     "winston": "^2.4.0",
+    "xml2js-es6-promise": "^1.1.1",
     "yaml": "^0.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^9.3.0"
   },
   "pkg": {
     "scripts": [

@@ -12,6 +12,7 @@ import StopRouter from './router/StopRouter';
 import StadStillRouter from './router/StandStillRouter';
 import CreatureRouter from './router/CreatureRouter';
 import HumanRouter from './router/HumanRouter';
+import GpxRouter from './router/GpxRouter';
 
 /**
  * Helper class to deal with our walker.
@@ -39,6 +40,8 @@ export default class Walker {
             this.router = new StadStillRouter(config, state);
         } else if (config.router.name === 'creatures') {
             this.router = new CreatureRouter(config, state);
+        } else if (config.router.name === 'gpx') {
+            this.router = new GpxRouter(config, state);
         } else {
             logger.warn(`Unknown router '${this.router}', using 'stops`);
             this.router = new StopRouter(config, state);
@@ -69,6 +72,10 @@ export default class Walker {
         }
 
         let speed = this.config.speed;
+        if (speed === 'auto') {
+            // not init yet, don't move
+            speed = 0;
+        }
         speed += (Math.random() - 0.5) * speed * 0.1;
         if (speed <= 0) return;
 
