@@ -1,8 +1,6 @@
-import * as _ from 'lodash';
 import * as fs from 'mz/fs';
 import * as xml2js from 'xml2js-es6-promise';
 
-import { enums } from 'draconode';
 import { BaseRouter, Target } from './BaseRouter';
 
 export default class GpxRouter extends BaseRouter {
