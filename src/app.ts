@@ -68,10 +68,11 @@ async function main() {
         logger.debug('Ping server...');
         await client.ping(true);
 
-        await client.boot(config.credentials);
+        let response: any = await client.boot(config.credentials);
+        apihelper.parse(response);
 
         logger.debug('Login...');
-        let response = await client.login();
+        response = await client.login();
         if (!response) throw new Error('Unable to login');
         apihelper.parse(response);
         const newLicence = response.info.newLicense;
@@ -79,9 +80,6 @@ async function main() {
         if (response.info.sendClientLog) {
             logger.warn('Server is asking for client log!');
         }
-
-        logger.debug('Load...');
-        await client.load();
 
         logger.info('Client started...');
 
@@ -98,8 +96,6 @@ async function main() {
 
         await mapRefresh();
         socket.ready();
-
-        await apihelper.startingEvents();
 
         if (newLicence > 0) {
             await client.acceptLicence(newLicence);
@@ -237,7 +233,7 @@ async function mapRefresh(): Promise<void> {
     const update = await client.getMapUpdate(pos.lat, pos.lng);
     const info = apihelper.parseMapUpdate(update);
 
-    await client.call('ClientEventService', 'clientLogRecords', [ { __type: 'List<>', value: [] } ]);
+    // await client.call('ClientEventService', 'clientLogRecords', [ { __type: 'List<>', value: [] } ]);
 
     state.api.lastMapUpdate = {
         when: moment(),

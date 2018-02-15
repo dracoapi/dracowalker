@@ -31,14 +31,15 @@ export default class APIHelper {
         const info: any = {};
 
         if (response.__type === 'FAuthData') {
-            this.state.api.config = response.config;
-            if (this.config.speed === 'auto') {
-                this.config.speed = 0.9 * response.config.avatarMoveRunSpeed;
-                logger.debug(`Auto speed set to ${this.config.speed.toFixed(1)} km/h`);
-            }
             this.state.player.id = response.info.userId;
             this.state.player.nickname = response.info.nickname;
             // avatar: response.info.avatarAppearanceDetails,
+        } else if (response.__type === 'FConfig') {
+            this.state.api.config = response;
+            if (this.config.speed === 'auto') {
+                this.config.speed = 0.9 * response.avatarMoveRunSpeed;
+                logger.debug(`Auto speed set to ${this.config.speed.toFixed(1)} km/h`);
+            }
         } else if (response.__type === 'FBagUpdate') {
             if (response.allowedItemsSize) this.state.player.storage.items = response.allowedItemsSize;
             this.state.inventory = response.items;
@@ -231,11 +232,11 @@ export default class APIHelper {
         }
     }
 
-    async startingEvents() {
-        const client: Client = this.state.client;
-        for (let i = 0; i < 21; i++) {
-            await client.event('LoadingScreenPercent', '100');
-        }
-        await client.event('DestroyLoadingScreen');
-    }
+    // async startingEvents() {
+    //     const client: Client = this.state.client;
+    //     for (let i = 0; i < 21; i++) {
+    //         await client.event('LoadingScreenPercent', '100');
+    //     }
+    //     await client.event('DestroyLoadingScreen');
+    // }
 }
