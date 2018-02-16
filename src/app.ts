@@ -1,4 +1,4 @@
-require('dotenv').config({silent: true});
+require('dotenv').config();
 
 import * as logger from 'winston';
 import { Client, enums } from 'draconode';

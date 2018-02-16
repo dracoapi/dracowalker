@@ -1,7 +1,7 @@
 import * as logger from 'winston';
 import * as _ from 'lodash';
 
-import { Client, objects, enums } from 'draconode';
+import { objects, enums } from 'draconode';
 import * as dracoText from 'dracotext';
 
 import * as database from './data';
