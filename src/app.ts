@@ -112,14 +112,7 @@ async function main() {
         if (config.behavior.incubate) {
             player.dispatchIncubators();
             setInterval(async () => {
-                try {
-                    await player.dispatchIncubators();
-                } catch (e) {
-                    logger.error(e);
-                    if (e.details && e.details.constructor.name !== 'IncomingMessage') {
-                        logger.error(e.details);
-                    }
-                }
+                await player.dispatchIncubators();
             }, 4 * 60 * 1000);
         }
     } catch (e) {

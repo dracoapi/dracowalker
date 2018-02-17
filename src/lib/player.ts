@@ -292,19 +292,26 @@ export default class Player {
 
     async dispatchIncubators() {
         if (!this.config.behavior.incubate) return;
-        const hatchInfo = await this.getHatchingInfo();
-        let freeIncub = hatchInfo.incubators.filter(i => i.eggId === null);
-        let eggs = hatchInfo.eggs.filter(e => e.incubatorId === null && !e.isEggForRoost && !e.isHatching);
-        if (freeIncub.length > 0 && eggs.length > 0) {
-            logger.debug('Dispatch incubators');
-            const client: Client = this.state.client;
-            eggs = _.orderBy(eggs, 'totalDistance', 'asc');
-            freeIncub = _.orderBy(freeIncub, 'usagesLeft', 'desc');
-            const max = Math.min(eggs.length, freeIncub.length);
-            for (let i = 0; i < max; i++) {
-                logger.info(`Start hatching a ${eggs[i].totalDistance / 1000}km egg.`);
-                await client.eggs.startHatchingEgg(eggs[i].id, freeIncub[i].incubatorId);
-                await client.delay(this.config.delay.incubator * _.random(900, 1100));
+        try {
+            const hatchInfo = await this.getHatchingInfo();
+            let freeIncub = hatchInfo.incubators.filter(i => i.eggId === null && i.roostBuildingId === null);
+            let eggs = hatchInfo.eggs.filter(e => e.incubatorId === null && !e.isEggForRoost && !e.isHatching);
+            if (freeIncub.length > 0 && eggs.length > 0) {
+                logger.debug('Dispatch incubators');
+                const client: Client = this.state.client;
+                eggs = _.orderBy(eggs, 'totalDistance', 'asc');
+                freeIncub = _.orderBy(freeIncub, 'usagesLeft', 'desc');
+                const max = Math.min(eggs.length, freeIncub.length);
+                for (let i = 0; i < max; i++) {
+                    logger.info(`Start hatching a ${eggs[i].totalDistance / 1000}km egg.`);
+                    await client.eggs.startHatchingEgg(eggs[i].id, freeIncub[i].incubatorId);
+                    await client.delay(this.config.delay.incubator * _.random(900, 1100));
+                }
+            }
+        } catch (e) {
+            logger.error(e);
+            if (e.details && e.details.constructor.name !== 'IncomingMessage') {
+                logger.error(e.details);
             }
         }
     }
