@@ -2,6 +2,7 @@ import * as logger from 'winston';
 import * as _ from 'lodash';
 import * as fastify from 'fastify';
 
+import { enums } from 'draconode';
 import Player from '../lib/player';
 import GoThereRouter from '../lib/router/GoThereRouter';
 
@@ -112,6 +113,7 @@ export default class SocketServer {
      */
     sendCreatureCaught(creature) {
         if (!this.config.ui.enabled) return;
+        creature.fullname = enums.CreatureType[creature.name];
         this.io.emit('creature_caught', {
             creature,
             position: this.state.pos,
@@ -151,6 +153,7 @@ export default class SocketServer {
     async sendCreatures(client) {
         const creatures = await this.player.getCreatures();
         for (const creature of creatures) {
+            creature.fullname = enums.CreatureType[creature.name];
             creature.evolutions = {};
             creature.possibleEvolutions.forEach((v, k) => { creature.evolutions[v] = k; });
         }
