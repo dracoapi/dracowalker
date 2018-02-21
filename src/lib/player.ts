@@ -199,7 +199,7 @@ export default class Player {
             (c.attackValue + c.staminaValue) > (creature.attackValue + creature.staminaValue) &&
             c.cp > creature.cp
         );
-        if (better) {
+        if (better && !creature.isArenaDefender) {
             await Bluebird.delay(this.config.delay.release * _.random(900, 1100));
             const client: Client = this.state.client;
             const response = await client.releaseCreatures([ creature.id ]);
