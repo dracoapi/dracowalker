@@ -177,12 +177,12 @@ async function handlePendingActions() {
         const todo = state.todo.shift();
         if (todo.call === 'release_creature') {
             logger.info('Release creatures', todo.creatures);
-            const response = await client.releaseCreatures(todo.creatures);
+            const response = await client.creatures.release(todo.creatures);
             apihelper.parse(response);
             await Bluebird.delay(config.delay.release * _.random(900, 1100));
 
         } else if (todo.call === 'evolve_creature') {
-            const response = await client.evolve(todo.creature, todo.to);
+            const response = await client.creatures.evolve(todo.creature, todo.to);
             apihelper.parse(response);
             response.creature.display = strings.getCreature(enums.CreatureType[response.creature.name]);
             logger.info('Creature evolve to ' + response.creature.display);
@@ -224,7 +224,7 @@ async function mapRefresh(): Promise<void> {
     logger.debug('Map Refresh', state.pos);
     const pos = walker.fuzzedLocation(state.pos);
     const update = await client.getMapUpdate(pos.lat, pos.lng);
-    const info = apihelper.parseMapUpdate(update);
+    const info = await apihelper.parseMapUpdate(update);
 
     // await client.call('ClientEventService', 'clientLogRecords', [ { __type: 'List<>', value: [] } ]);
 

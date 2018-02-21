@@ -153,7 +153,7 @@ export default class Player {
                 const name = strings.getCreature(enums.CreatureType[creature.name]);
                 logger.debug('Try catching a wild ' + name);
 
-                const info = await client.encounter(creature.id);
+                const info = await client.creatures.encounter(creature.id);
                 if (info && !info.isCreatureStorageFull) {
                     let response: any = {};
                     let tries = 3;
@@ -164,10 +164,10 @@ export default class Player {
                             break;
                         }
                         await client.delay(this.config.delay.encouter * _.random(900, 1100));
-                        response = await client.catch(creature.id,
-                                                    ball,
-                                                    0.5 + Math.random() * 0.5,
-                                                    Math.random() >= 0.5);
+                        response = await client.creatures.catch(creature.id,
+                                                                ball,
+                                                                0.5 + Math.random() * 0.5,
+                                                                Math.random() >= 0.5);
                         this.apihelper.parse(response);
                         this.state.inventory.find(i => i.type === ball).count--;
                     }
@@ -202,7 +202,7 @@ export default class Player {
         if (better && !creature.isArenaDefender && !creature.isLibraryDefender && creature.group === 0) {
             await Bluebird.delay(this.config.delay.release * _.random(900, 1100));
             const client: Client = this.state.client;
-            const response = await client.releaseCreatures([ creature.id ]);
+            const response = await client.creatures.release([ creature.id ]);
             this.apihelper.parse(response);
             logger.info(`${creature.display} released.`);
             return response;
@@ -221,7 +221,7 @@ export default class Player {
                 const candies = this.state.player.avatar.candies.get(creature.candyType);
                 if (candies >= candiesNeeded) {
                     const client: Client = this.state.client;
-                    const response = await client.evolve(creature.id, to);
+                    const response = await client.creatures.evolve(creature.id, to);
                     this.apihelper.parse(response);
                     const from = (<any>creature).display || strings.getCreature(enums.CreatureType[creature.name]);
                     response.creature.display = strings.getCreature(enums.CreatureType[response.creature.name]);

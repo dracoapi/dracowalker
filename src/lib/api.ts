@@ -1,7 +1,7 @@
 import * as logger from 'winston';
 import * as _ from 'lodash';
 
-import { objects, enums } from 'draconode';
+import { Client, objects, enums } from 'draconode';
 import * as dracoText from 'dracotext';
 
 import * as database from './data';
@@ -108,7 +108,7 @@ export default class APIHelper {
         return info;
     }
 
-    parseMapUpdate(response) {
+    async parseMapUpdate(response) {
         const info: any = {};
         if (!response) return info;
         if (response.__type === 'FUpdate') {
@@ -175,6 +175,13 @@ export default class APIHelper {
                     // todo
                 } else if (item.__type === 'FDungeonUpdate') {
                     // nothing?
+                } else if (item.__type === 'FIngameNotifications') {
+                    const notifications = item as objects.FIngameNotifications;
+                    const client = this.state.client as Client;
+                    for (const notif of notifications.notifications) {
+                        logger.info(`[Notification] ${notif.title} - ${notif.message}`);
+                        await client.acknowledgeNotification(notif.type);
+                    }
                 } else {
                     logger.warn('Unhandled object in map update: ' + item.__type);
                 }
