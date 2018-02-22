@@ -1,11 +1,10 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/niicodev)
 [![Build Status](https://travis-ci.org/dracoapi/dracowalker.svg?branch=master)](https://travis-ci.org/dracoapi/dracowalker)
 [![appveyor](https://ci.appveyor.com/api/projects/status/github/dracoapi/dracowalker?branch=master&svg=true)](https://ci.appveyor.com/project/niicojs/dracowalker/build/artifacts)
-
+[![Greenkeeper badge](https://badges.greenkeeper.io/dracoapi/dracowalker.svg)](https://greenkeeper.io/)
 
 # DracoWalker
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/dracoapi/dracowalker.svg)](https://greenkeeper.io/)
 Bot that play Draconius GO using my [DracoNode API](https://github.com/dracoapi/nodedracoapi).
 It walks, spin and catch creatures. It can also clean inventory and hatch egg.  
 Not meant to be a fully functional bot, it's more a proof of concept of what can be done with the API.
