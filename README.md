@@ -4,6 +4,8 @@
 
 
 # DracoWalker
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/dracoapi/dracowalker.svg)](https://greenkeeper.io/)
 Bot that play Draconius GO using my [DracoNode API](https://github.com/dracoapi/nodedracoapi).
 It walks, spin and catch creatures. It can also clean inventory and hatch egg.  
 Not meant to be a fully functional bot, it's more a proof of concept of what can be done with the API.
