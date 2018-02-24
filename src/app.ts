@@ -220,7 +220,7 @@ async function handlePendingActions() {
                         logger.info(`${name} used`);
                         await Bluebird.delay(config.delay.useItem * _.random(900, 1100));
                     }
-                }else {
+                } else {
                     logger.info('Super vision already in use.');
                 }
             }
