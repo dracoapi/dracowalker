@@ -94,8 +94,9 @@ async function main() {
         logger.debug('Get creatures...');
         await player.getCreatures();
 
-        await mapRefresh();
         socket.ready();
+
+        await mapRefresh();
 
         if (newLicence > 0) {
             await client.acceptLicence(newLicence);
@@ -196,6 +197,33 @@ async function handlePendingActions() {
             logger.info(`Dropped ${todo.count} of ${name}`);
             await Bluebird.delay(config.delay.recycle * _.random(900, 1100));
 
+        } else if (todo.call === 'use_item') {
+            const item = state.inventory.find(i => i.type === todo.id);
+            const name = strings.getItem(enums.ItemType[todo.id]);
+            if (item.count > 0) {
+                if (item.fulltype === 'INCENSE') {
+                    if (state.player.avatar.incenseLeftTime.toNumber() === 0) {
+                        const response = await client.inventory.useIncense();
+                        apihelper.parse(response);
+                        item.count--;
+                        logger.info(`${name} used`);
+                        await Bluebird.delay(config.delay.useItem * _.random(900, 1100));
+                    } else {
+                        logger.info('Incense already in use.');
+                    }
+                } else if (item.fulltype === 'SUPER_VISION') {
+                    if (state.player.avatar.superVisionLeftTime.toNumber() === 0) {
+                        const pos = walker.fuzzedLocation(state.pos);
+                        const response = await client.inventory.useSuperVision(pos.lat, pos.lng);
+                        apihelper.parse(response);
+                        item.count--;
+                        logger.info(`${name} used`);
+                        await Bluebird.delay(config.delay.useItem * _.random(900, 1100));
+                    }
+                }else {
+                    logger.info('Super vision already in use.');
+                }
+            }
         } else if (todo.call === 'open_egg') {
             const response = await client.eggs.openHatchedEgg(todo.incubatorId);
             apihelper.parse(response);

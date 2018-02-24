@@ -237,8 +237,11 @@ export default class Player {
         const response = await client.inventory.getUserItems();
         this.apihelper.parse(response);
         for (const item of this.state.inventory) {
+            if (!item.fulltype) {
+                item.fulltype = enums.ItemType[item.type];
+            }
             if (!item.display) {
-                item.display = strings.getItem(enums.ItemType[item.type]);
+                item.display = strings.getItem(item.fulltype);
             }
         }
         return this.state.inventory;

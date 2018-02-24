@@ -47,6 +47,8 @@ export default class APIHelper {
             this.state.player.avatar = response.avaUpdate;
             this.state.creatures.push(response.creature);
             this.checkLoot(response);
+        } else if (response.__type === 'FAvaUpdate') {
+            this.state.player.avatar = response;
         } else if (response.__type === 'FUpdate') {
             for (const item of response.items) {
                 if (item.__type === 'FPickItemsResponse') {

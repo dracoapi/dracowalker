@@ -43,11 +43,12 @@ export default class SocketServer {
             if (this.initialized) this.ready(socket);
 
             socket.on('inventory_list', () => this.sendInventory(socket));
+            socket.on('drop_items', msg => this.dropItems(socket, msg));
+            socket.on('use_item', msg => this.useItem(socket, msg));
             socket.on('creature_list', () => this.sendCreatures(socket));
             socket.on('eggs_list', () => this.sendEggs(socket));
             socket.on('player_stats', () => this.sendPlayerStats());
             socket.on('transfer_creature', msg => this.transferCreature(socket, msg));
-            socket.on('drop_items', msg => this.dropItems(socket, msg));
             socket.on('evolve_creature', msg => this.evolveCreature(socket, msg));
             socket.on('set_destination', msg => this.setDestination(msg));
         });
@@ -212,6 +213,13 @@ export default class SocketServer {
             call: 'drop_items',
             id: msg.id,
             count: msg.count,
+        });
+    }
+
+    useItem(client, msg) {
+        this.state.todo.push({
+            call: 'use_item',
+            id: msg.id,
         });
     }
 

@@ -56,6 +56,7 @@ module.exports.load = function() {
             release: 0.1,
             evolve: 3,
             recycle: 0.5,
+            useItem: 0.5,
         },
         proxy: {
             checkip: true,
