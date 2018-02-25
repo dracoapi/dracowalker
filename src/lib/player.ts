@@ -297,7 +297,7 @@ export default class Player {
         if (!this.config.behavior.incubate) return;
         try {
             const hatchInfo = await this.getHatchingInfo();
-            let freeIncub = hatchInfo.incubators.filter(i => i.eggId === null && i.roostBuildingId === null);
+            let freeIncub = hatchInfo.incubators.filter(i => !i.eggId && !i.roostBuildingId);
             let eggs = hatchInfo.eggs.filter(e => e.incubatorId === null && !e.isEggForRoost && !e.isHatching);
             if (freeIncub.length > 0 && eggs.length > 0) {
                 logger.debug('Dispatch incubators');

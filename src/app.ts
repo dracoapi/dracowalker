@@ -15,6 +15,8 @@ import Player from './lib/player';
 import SocketServer from './ui/socket.server';
 import Fight from './lib/fight';
 
+import * as versions from './lib/versions';
+
 const strings = dracoText.load('english');
 const config = require('./lib/config').load();
 
@@ -44,6 +46,7 @@ let client: Client;
 
 async function main() {
     logger.info('App starting...');
+    await versions.print();
     if (config.ui.enabled) {
         let portInfo = '';
         if (config.ui.port && config.ui.port !== 8000) portInfo = `?websocket=http://localhost:${config.ui.port}`;
