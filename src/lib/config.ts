@@ -30,7 +30,7 @@ module.exports.load = function() {
             lng: 2.3364526,
         },
         router: {
-            name: 'stops',
+            name: 'human',
             followroads: true,
         },
         speed: 'auto',
