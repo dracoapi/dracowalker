@@ -10,7 +10,10 @@ export async function print() {
         if (!fs.existsSync(file)) {
             logger.info('Run from binary, version not found');
         } else {
-            const version = await fs.readFile(file, 'utf8');
+            let version: string = await fs.readFile(file, 'utf8');
+            if (version.charCodeAt(0) === 0xFEFF) {
+                version = version.slice(1);
+            }
             logger.info('Run from binary, version ' + version);
         }
     }
