@@ -332,6 +332,7 @@ export default class Player {
             const response = await client.openChest(chest);
             this.apihelper.parse(response);
             logger.info('Chest found!');
+            this.state.socket.sendChest(chest);
         }
     }
 

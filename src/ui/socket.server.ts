@@ -138,6 +138,11 @@ export default class SocketServer {
         this.io.emit('building_visited', building);
     }
 
+    sendChest(chest) {
+        if (!this.config.ui.enabled) return;
+        this.io.emit('open_chest', chest);
+    }
+
     /**
      * Send the inventory to a client after it request it
      * @param {object} client - the socket client to send info to
