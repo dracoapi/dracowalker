@@ -103,6 +103,17 @@ export default class APIHelper {
                 incubators: hatch.incubators,
                 eggs: hatch.eggs,
             };
+        } else if (response.__type === 'FMentorshipAwardUpdate') {
+            const award = response as objects.FMentorshipAwardUpdate;
+            if (award.gotDragon) {
+                logger.info('[Award] Creature ' + strings.getCreature(enums.CreatureType[award.creatureType]));
+            }
+            if (award.gotCandiesCount) {
+                let msg = strings.get('key.loot.result.candyFromMentorship');
+                const candy = strings.get('key.candy.') + enums.CreatureType[award.creatureType];
+                msg = msg.replace('{0}', candy);
+                logger.info('[Award] ' + msg);
+            }
         } else {
             logger.warn('Unhandled response: ' + response.__type);
         }
