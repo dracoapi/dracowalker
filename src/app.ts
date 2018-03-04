@@ -47,10 +47,12 @@ let client: Client;
 async function main() {
     logger.info('App starting...');
     await versions.print();
+    await versions.checkLatest();
+
     if (config.ui.enabled) {
         let portInfo = '';
         if (config.ui.port && config.ui.port !== 8000) portInfo = `?websocket=http://localhost:${config.ui.port}`;
-        logger.info(`go to http://ui.dracoapi.ml/${portInfo} for ui`);
+        logger.info(`Go to http://ui.dracoapi.ml/${portInfo} for ui`);
     }
     try {
         const valid = await proxyhelper.checkProxy();
