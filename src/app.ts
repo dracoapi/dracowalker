@@ -223,6 +223,9 @@ async function handlePendingActions() {
                         logger.info(`${name} used`);
                         await Bluebird.delay(config.delay.useItem * _.random(900, 1100));
                     }
+                } else if (item.fulltype === 'EXPERIENCE_BOOSTER') {
+                    const response = await client.inventory.useExperienceBooster();
+                    apihelper.parse(response);
                 } else {
                     logger.info('Super vision already in use.');
                 }
