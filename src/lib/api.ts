@@ -1,5 +1,6 @@
 import * as logger from 'winston';
 import * as _ from 'lodash';
+import * as moment from 'moment';
 
 import { Client, objects, enums } from 'draconode';
 import * as dracoText from 'dracotext';
@@ -243,7 +244,22 @@ export default class APIHelper {
                 logger.debug(`  ${item.qty} dust.`);
             } else if (item.__type === 'FLootItemBuff') {
                 const buff = (item as objects.FLootItemBuff).buff;
-                const info = strings.get('key.buff.' + enums.BuffType[buff.type]);
+                const buffType = enums.BuffType[buff.type];
+                let info;
+                if (['EXPERIENCE_BOOSTER', 'SUPER_VISION'].includes(buffType)) {
+                    info = strings.get(`key.item.${buffType}.description`);
+                } else if (buffType === 'ACTIVATION_RADIUS_IMPROVE') {
+                    const duration = moment.duration(buff.durationMs).humanize();
+                    info = strings.get('key.recipe.descr.RECIPE_ACTIVATION_RADIUS_IMPROVE_1')
+                                .replace('{0}', buff.valuePercent.toFixed(1))
+                                .replace('{1}', duration);
+                } else if (buffType === 'INCENSE') {
+                    const duration = moment.duration(buff.durationMs).humanize();
+                    info = strings.get('key.item.INCENSE.description').replace('{0}', duration);
+                } else {
+                    info = strings.get('key.buff.' + enums.BuffType[buff.type]);
+                    if (!info) info = strings.get('key.buff.tooltip.' + enums.BuffType[buff.type]);
+                }
                 logger.debug(`  Buff received. ${info}.`);
             } else {
                 logger.debug('Loot unhandled:');
