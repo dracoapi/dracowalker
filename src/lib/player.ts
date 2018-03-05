@@ -317,6 +317,7 @@ export default class Player {
             logger.error(e);
             if (e.details && e.details.constructor.name !== 'IncomingMessage') {
                 logger.error(e.details);
+                if (e.details.cause === 'SESSION_GONE') process.exit();
             }
         }
     }

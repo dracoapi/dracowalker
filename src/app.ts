@@ -162,9 +162,7 @@ async function updatePos() {
         logger.error(e);
         if (e.details && e.details.__type === 'FServiceError') {
             logger.error(e.details);
-            if (e.details.cause === 'SESSION_GONE') {
-                process.exit();
-            }
+            if (e.details.cause === 'SESSION_GONE') process.exit();
         }
         state.errors++;
         if (state.errors === 10) {
@@ -224,12 +222,14 @@ async function handlePendingActions() {
                         item.count--;
                         logger.info(`${name} used`);
                         await Bluebird.delay(config.delay.useItem * _.random(900, 1100));
+                    } else {
+                        logger.info('Super vision already in use.');
                     }
                 } else if (item.fulltype === 'EXPERIENCE_BOOSTER') {
                     const response = await client.inventory.useExperienceBooster();
                     apihelper.parse(response);
                 } else {
-                    logger.info('Super vision already in use.');
+                    logger.info('Unhandled item use: ' + item.fulltype);
                 }
             }
         } else if (todo.call === 'open_egg') {
