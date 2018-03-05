@@ -60,6 +60,8 @@ export default class Player {
     }
 
     async spinBuildings() {
+        if (this.state.player.avatar.isBagFull) return;
+
         const client: Client = this.state.client;
         const types = [ enums.BuildingType.STOP, enums.BuildingType.PORTAL, enums.BuildingType.DUNGEON_STOP ];
 
