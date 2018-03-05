@@ -8,19 +8,17 @@ let _version: string;
 
 export async function getVersion(): Promise<string> {
     if (!_version) {
+        const file = path.join(__dirname, '../../version');
         if (!process['pkg']) {
             _version = 'source';
+        } else if (!fs.existsSync(file)) {
+            _version = 'unknown';
         } else {
-            const file = path.join(__dirname, '../../version');
-            if (!fs.existsSync(file)) {
-                _version = 'unknown';
-            } else {
-                let content: string = await fs.readFile(file, 'utf8');
-                if (content.charCodeAt(0) === 0xFEFF) {
-                    content = content.slice(1);
-                }
-                _version = content;
+            let content: string = await fs.readFile(file, 'utf8');
+            if (content.charCodeAt(0) === 0xFEFF) {
+                content = content.slice(1);
             }
+            _version = content;
         }
     }
     return _version;

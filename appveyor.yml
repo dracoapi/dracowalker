@@ -10,6 +10,7 @@ build: off
 
 build_script:
 - ps: Out-File version -Encoding utf8 -NoNewline -InputObject $(If ($env:APPVEYOR_REPO_TAG -eq "true") {$env:APPVEYOR_BUILD_VERSION} Else {"dev-" + $env:APPVEYOR_BUILD_VERSION})
+- ps: Get-Content -path version
 - npm run build
 - npm run pack
 
