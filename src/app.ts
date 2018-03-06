@@ -228,6 +228,8 @@ async function handlePendingActions() {
                 } else if (item.fulltype === 'EXPERIENCE_BOOSTER') {
                     const response = await client.inventory.useExperienceBooster();
                     apihelper.parse(response);
+                    item.count--;
+                    logger.info(`${name} used`);
                 } else {
                     logger.info('Unhandled item use: ' + item.fulltype);
                 }
