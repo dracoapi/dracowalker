@@ -1,3 +1,7 @@
+branches:
+  only:
+    - master
+
 install:
 - ps: Install-Product node 9
 - node --version
