@@ -47,7 +47,7 @@ export async function checkLatest() {
         });
         const current = +version.replace('dev-1.0.', '');
         const latest = +info.build.buildNumber;
-        if (latest > current) {
+        if (info.build.status === 'success' && latest > current) {
             logger.warn(`A new version (${latest}) is available, check https://ci.appveyor.com/project/niicojs/dracowalker/build/artifacts`);
         }
     } else {
