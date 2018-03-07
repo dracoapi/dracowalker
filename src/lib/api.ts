@@ -189,6 +189,8 @@ export default class APIHelper {
                     // todo
                 } else if (item.__type === 'FDungeonUpdate') {
                     // nothing?
+                } else if (item.__type === 'FConfig') {
+                    this.state.api.config = item;
                 } else if (item.__type === 'FIngameNotifications') {
                     const notifications = item as objects.FIngameNotifications;
                     const client = this.state.client as Client;

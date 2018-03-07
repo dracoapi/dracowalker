@@ -80,11 +80,23 @@ async function main() {
         response = await client.login();
         if (!response) throw new Error('Unable to login');
         apihelper.parse(response);
-        const newLicence = response.info.newLicense;
 
+        const newLicence = response.info.newLicense;
         if (response.info.sendClientLog) {
             logger.warn('Server is asking for client log!');
         }
+
+        if (response.info.sendClientLog) {
+            logger.warn('Send client log is set to true! Please report.');
+        }
+
+        await client.post('https://us.draconiusgo.com/client-error', {
+            appVersion: client.clientVersion,
+            deviceInfo: 'platform=iOS\nos=11.2.6\ndevice=iPhone 6S',
+            userId: client.user.id,
+            message: 'Material doesn\'t have a texture property \'_MainTex\'',
+            stackTrace: '',
+        });
 
         logger.info('Client started...');
 
