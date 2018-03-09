@@ -164,9 +164,11 @@ async function updatePos() {
 
         const max: number = +state.api.config.updateRequestPeriodSeconds;
         const last = state.api.lastMapUpdate;
-        if (!last || moment().subtract(max, 's').isAfter(last.when)) {
+        const longEnough = moment().subtract(max, 's').isAfter(last.when);
+        const farEnough = true; // player.distance(last.pos) >= state.api.config.updateRequestMinimalDistance;
+        if (!last || (longEnough && farEnough)) {
             // no previous call, fire a getMapUpdate
-            // or if it's been enough time since last getMapUpdate
+            // or if it's been enough time since last getMapUpdate and player moved enough
             await mapRefresh();
         }
         state.errors = 0;
@@ -273,7 +275,8 @@ async function handlePendingActions() {
 async function mapRefresh(): Promise<void> {
     logger.debug('Map Refresh', state.pos);
     const pos = walker.fuzzedLocation(state.pos);
-    const update = await client.getMapUpdate(pos.lat, pos.lng);
+    const tilecache = apihelper.getTileCache();
+    const update = await client.getMapUpdate(pos.lat, pos.lng, 0, tilecache);
     const info = await apihelper.parseMapUpdate(update);
 
     // await client.call('ClientEventService', 'clientLogRecords', [ { __type: 'List<>', value: [] } ]);

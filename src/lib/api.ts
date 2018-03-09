@@ -1,6 +1,7 @@
 import * as logger from 'winston';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import * as long from 'long';
 
 import { Client, objects, enums } from 'draconode';
 import * as dracoText from 'dracotext';
@@ -16,6 +17,7 @@ const strings = dracoText.load('english');
 export default class APIHelper {
     config: any;
     state: any;
+    buildingCache = [];
 
     /**
      * @constructor
@@ -34,6 +36,7 @@ export default class APIHelper {
         if (response.__type === 'FAuthData') {
             this.state.player.id = response.info.userId;
             this.state.player.nickname = response.info.nickname;
+            this.state.player.serverTime = response.info.serverTime;
             // avatar: response.info.avatarAppearanceDetails,
         } else if (response.__type === 'FConfig') {
             this.state.api.config = response;
@@ -65,13 +68,7 @@ export default class APIHelper {
                     }
                     info.building = item;
                 } else if (item.__type === 'FBuildingUpdate') {
-                    const buildingUpdate = item as objects.FBuildingUpdate;
-                    let buildings = [];
-                    buildings = Array.from(buildingUpdate.tileBuildings.values());
-                    buildings = buildings.filter(t => t.buildings).map(t => t.buildings);
-                    buildings = _.union.apply(null, buildings);
-                    buildings = _.uniqBy(buildings, 'id');
-                    this.state.map.buildings = buildings;
+                    this.updateBuildings(item);
                 } else if (item.__type === 'FCreatureUpdate') {
                     this.state.map.creatures = item;
                 } else if (item.__type === 'FDungeonUpdate') {
@@ -126,19 +123,12 @@ export default class APIHelper {
         const info: any = {};
         if (!response) return info;
         if (response.__type === 'FUpdate') {
-            this.state.map = {};
+            this.state.map = {
+                buildings: this.state.map ? this.state.map.buildings : undefined,
+            };
             for (const item of response.items) {
                 if (item.__type === 'FBuildingUpdate') {
-                    // buildings
-                    const buildingUpdate = item as objects.FBuildingUpdate;
-                    if (buildingUpdate) {
-                        let buildings = [];
-                        buildings = Array.from(buildingUpdate.tileBuildings.values());
-                        buildings = buildings.filter(t => t.buildings).map(t => t.buildings);
-                        buildings = _.union.apply(null, buildings);
-                        buildings = _.uniqBy(buildings, 'id');
-                        this.state.map.buildings = buildings;
-                    }
+                    this.updateBuildings(item);
                 } else if (item.__type === 'FAvaUpdate') {
                     // avatar
                     const avatar = item as objects.FAvaUpdate;
@@ -268,6 +258,57 @@ export default class APIHelper {
                 logger.debug(JSON.stringify(item, null, 2));
             }
         }
+    }
+
+    updateBuildings(update: objects.FBuildingUpdate) {
+        let buildings = [];
+        buildings = Array.from(update.tileBuildings.values());
+        buildings = buildings.filter(t => t.buildings).map(t => t.buildings);
+        buildings = _.union.apply(null, buildings);
+
+        for (const cache of this.buildingCache) {
+            const state = cache.state as objects.FTileState;
+            buildings = buildings.concat(state.buildings);
+        }
+
+        buildings = _.uniqBy(buildings, 'id');
+
+        this.state.map.buildings = buildings;
+
+        this.updateBuildingCache(update);
+    }
+
+    updateBuildingCache(update: objects.FBuildingUpdate) {
+        this.buildingCache = [];
+        for (const [key, value] of update.tileBuildings) {
+            this.buildingCache = this.buildingCache.filter(c =>
+                key.tile.x !== c.tile.tile.x ||
+                key.tile.y !== c.tile.tile.y ||
+                key.tile.zoom !== c.tile.tile.zoom ||
+                key.dungeonId !== c.tile.dungeonId
+            );
+            this.buildingCache.unshift({
+                tile: key,
+                state: value,
+            });
+        }
+        if (this.buildingCache.length > 64) {
+            this.buildingCache = this.buildingCache.slice(0, 64);
+        }
+    }
+
+    getTileCache(): Map<objects.FTile, long> {
+        const cache = new Map<objects.FTile, long>();
+        for (const building of this.buildingCache) {
+            if (this.state.player.avatar.dungeonId === building.tile.dungeonId) {
+                const nodeTime: long = (building.state as objects.FTileState).time;
+                const serverTime: long = this.state.player.serverTime;
+                if (serverTime.add(-60000).lessThan(nodeTime)) {
+                    cache.set(building.tile, nodeTime);
+                }
+            }
+        }
+        return cache;
     }
 
     // async startingEvents() {
