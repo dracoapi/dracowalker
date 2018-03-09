@@ -1,6 +1,6 @@
 {
   "name": "dracowalker",
-  "version": "1.0.0",
+  "version": "1.0.10",
   "description": "",
   "main": "bin/app.js",
   "bin": "bin/app.js",
