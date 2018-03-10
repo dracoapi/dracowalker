@@ -53,6 +53,7 @@ export default class APIHelper {
             this.checkLoot(response);
         } else if (response.__type === 'FAvaUpdate') {
             this.state.player.avatar = response;
+            this.state.player.storage.creatures = this.state.player.avatar.creatureStorageSize;
         } else if (response.__type === 'FUpdate') {
             for (const item of response.items) {
                 if (item.__type === 'FPickItemsResponse') {
@@ -61,6 +62,7 @@ export default class APIHelper {
                     this.checkLoot(item);
                 } else if (item.__type === 'FAvaUpdate') {
                     this.state.player.avatar = item;
+                    this.state.player.storage.creatures = this.state.player.avatar.creatureStorageSize;
                 } else if (item.__type === 'FBuilding') {
                     const building = this.state.map.buildings.find(b => b.id === item.id);
                     if (building) {
@@ -133,6 +135,7 @@ export default class APIHelper {
                     // avatar
                     const avatar = item as objects.FAvaUpdate;
                     this.state.player.avatar = avatar;
+                    this.state.player.storage.creatures = this.state.player.avatar.creatureStorageSize;
                 } else if (item.__type === 'FHatchedEggs') {
                     // eggs
                     const hatchInfo = item as objects.FHatchedEggs;
