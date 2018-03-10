@@ -1,6 +1,6 @@
-# branches:
-#   only:
-#     - master
+branches:
+  except:
+    - dev
 
 skip_branch_with_pr: true
 

@@ -188,6 +188,17 @@ export default class APIHelper {
                         logger.info(`[Notification] ${notif.title} - ${notif.message}`);
                         await client.acknowledgeNotification(notif.type);
                     }
+                } else if (item.__type === 'FMentorshipAwardUpdate') {
+                    const award = item as objects.FMentorshipAwardUpdate;
+                    if (award.gotDragon) {
+                        logger.info('[Award] Creature ' + strings.getCreature(enums.CreatureType[award.creatureType]));
+                    }
+                    if (award.gotCandiesCount) {
+                        let msg = strings.get('key.loot.result.candyFromMentorship');
+                        const candy = strings.get('key.candy.') + enums.CreatureType[award.creatureType];
+                        msg = msg.replace('{0}', candy);
+                        logger.info('[Award] ' + msg);
+                    }
                 } else {
                     logger.warn('Unhandled object in map update: ' + item.__type);
                 }
