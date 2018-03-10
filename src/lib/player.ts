@@ -147,7 +147,7 @@ export default class Player {
         const wilds = this.state.map.creatures.wilds;
         if (wilds.length > 0) logger.debug(`${wilds.length} wild creature(s) around.`);
         for (const creature of wilds) {
-            if (this.state.creatures.length >= this.state.player.storage.creatures) {
+            if (this.state.creatures.length >= this.state.player.avatar.creatureStorageSize) {
                 logger.warn('Creature bag full!');
             } else if (this.getThrowBall() < 0) {
                 logger.warn('Out of balls!');
@@ -192,21 +192,41 @@ export default class Player {
         }
     }
 
-    async autoReleaseCreature(creature) {
+    async autoReleaseCreature(creature: objects.FUserCreature) {
         if (!this.config.behavior.autorelease) return;
 
         const creatures: objects.FUserCreature[] = this.state.creatures;
-        const better = creatures.find(c =>
-            c.name === creature.name &&
-            (c.attackValue + c.staminaValue) > (creature.attackValue + creature.staminaValue) &&
-            c.cp > creature.cp
-        );
-        if (better && !creature.isArenaDefender && !creature.isLibraryDefender && creature.group === 0) {
+        let release = false;
+        if (this.config.behavior.autorelease === true) {
+            // autorelease === true mean release if other is better
+            const better = creatures.find(c =>
+                c.name === creature.name &&
+                (c.attackValue + c.staminaValue) > (creature.attackValue + creature.staminaValue) &&
+                c.cp > creature.cp
+            );
+            release = (better !== undefined);
+        } else {
+            // release based on minimum stats
+            if (this.config.behavior.autorelease.hasOwnProperty('minattack')) {
+                release = release || (creature.attackValue < this.config.behavior.autorelease.minattack);
+            }
+            if (this.config.behavior.autorelease.hasOwnProperty('minstamina')) {
+                release = release || (creature.staminaValue < this.config.behavior.autorelease.minstamina);
+            }
+            if (this.config.behavior.autorelease.hasOwnProperty('mincp')) {
+                release = release || (creature.cp < this.config.behavior.autorelease.mincp);
+            }
+            if (this.config.behavior.autorelease.keepone) {
+                const other = creatures.find(c => c.name === creature.name);
+                release = release && (other !== undefined);
+            }
+        }
+        if (release && !creature.isArenaDefender && !creature.isLibraryDefender && creature.group === 0) {
             await Bluebird.delay(this.config.delay.release * _.random(900, 1100));
             const client: Client = this.state.client;
             const response = await client.creatures.release([ creature.id ]);
             this.apihelper.parse(response);
-            logger.info(`${creature.display} released.`);
+            logger.info(`${(<any>creature).display} released.`);
             return response;
         } else {
             return null;

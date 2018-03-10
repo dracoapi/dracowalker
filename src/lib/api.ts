@@ -133,7 +133,6 @@ export default class APIHelper {
                     // avatar
                     const avatar = item as objects.FAvaUpdate;
                     this.state.player.avatar = avatar;
-                    this.state.player.storage.creatures = this.state.player.avatar.creatureStorageSize;
                 } else if (item.__type === 'FHatchedEggs') {
                     // eggs
                     const hatchInfo = item as objects.FHatchedEggs;
@@ -149,7 +148,6 @@ export default class APIHelper {
                     }
                     this.state.map.hatched = hatchInfo;
                 } else if (item.__type === 'FAllianceChooseRequest') {
-                    // alliance
                     const chooseAlliance = item as objects.FAllianceChooseRequest;
                     if (chooseAlliance && this.config.behavior.autoalliance) {
                         let alliance = this.config.behavior.autoalliance;
