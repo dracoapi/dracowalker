@@ -7,6 +7,7 @@ import * as fs from 'mz/fs';
 import * as moment from 'moment';
 import * as Bluebird from 'bluebird';
 import * as dracoText from 'dracotext';
+import * as ua from 'universal-analytics';
 
 import APIHelper from './lib/api';
 import ProxyHelper from './lib/proxy';
@@ -43,6 +44,7 @@ const walker = state.walker = new Walker(config, state);
 const socket = state.socket = new SocketServer(config, state);
 
 let client: Client;
+let analytics: any;
 
 async function main() {
     logger.info('App starting...');
@@ -65,6 +67,13 @@ async function main() {
             proxy: proxyhelper.proxy,
         });
         state.client = client;
+
+        analytics = ua(
+            'UA-108458756-3',
+            `${config.credentials.login}:${config.credentials.username}`,
+            {strictCidFormat: false}
+        );
+        analytics.pageview('/').send();
 
         logger.debug('Init walker...');
         await walker.checkPath();
@@ -268,12 +277,10 @@ async function handlePendingActions() {
     }
 }
 
-/**
- * Refresh map information based on current location
- * @return {Promise}
- */
 async function mapRefresh(): Promise<void> {
     logger.debug('Map Refresh', state.pos);
+    analytics.pageview('/mapRefresh').send();
+
     const pos = walker.fuzzedLocation(state.pos);
     const tilecache = apihelper.getTileCache();
     const update = await client.getMapUpdate(pos.lat, pos.lng, 0, tilecache);
