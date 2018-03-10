@@ -74,6 +74,7 @@ async function main() {
             {strictCidFormat: false}
         );
         analytics.pageview('/').send();
+        analytics.event('version', await versions.getVersion()).send();
 
         logger.debug('Init walker...');
         await walker.checkPath();
