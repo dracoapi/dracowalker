@@ -19,7 +19,7 @@
     "bluebird": "^3.5.1",
     "cheerio": "^1.0.0-rc.2",
     "dotenv": "^5.0.1",
-    "draconode": "^0.6.2",
+    "draconode": "^0.6.3",
     "dracotext": "^1.1.1",
     "fastify": "^1.1.1",
     "geolib": "^2.0.24",
