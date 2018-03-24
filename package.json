@@ -19,8 +19,8 @@
     "bluebird": "^3.5.1",
     "cheerio": "^1.0.0-rc.2",
     "dotenv": "^5.0.1",
-    "draconode": "^0.6.3",
-    "dracotext": "^1.1.1",
+    "draconode": "^0.6.4",
+    "dracotext": "^1.1.2",
     "fastify": "^1.1.1",
     "geolib": "^2.0.24",
     "googlemaps": "^1.12.0",
@@ -40,7 +40,7 @@
     "yaml": "^0.3.0"
   },
   "devDependencies": {
-    "@types/node": "^9.4.7"
+    "@types/node": "^9.6.0"
   },
   "pkg": {
     "scripts": [

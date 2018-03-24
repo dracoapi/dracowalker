@@ -205,6 +205,18 @@ export default class Player {
                 c.cp > creature.cp
             );
             release = (better !== undefined);
+            if (!release) {
+                const worst = creatures.find(c =>
+                    c.name === creature.name &&
+                    (c.attackValue + c.staminaValue) < (creature.attackValue + creature.staminaValue) &&
+                    c.cp < creature.cp
+                );
+                if (worst) {
+                    // we find a one worst in our bag, release the worst one
+                    creature = worst;
+                    release = true;
+                }
+            }
         } else {
             // release based on minimum stats
             if (this.config.behavior.autorelease.hasOwnProperty('minattack')) {
