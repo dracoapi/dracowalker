@@ -126,6 +126,8 @@ async function main() {
             await client.acceptLicence(newLicence);
         }
 
+        // await client.getNews();
+
         await saveState();
 
         // update position every second
