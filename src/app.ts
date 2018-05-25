@@ -309,6 +309,10 @@ async function mapRefresh(): Promise<void> {
             await player.catchCreatures();
         }
     }
+
+    if (config.pos.save) {
+        await fs.writeFile('data/position.json', JSON.stringify(config.pos), 'utf8');
+    }
 }
 
 async function saveState() {

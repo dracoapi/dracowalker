@@ -28,6 +28,7 @@ module.exports.load = function() {
         pos: {
             lat: 48.8456222,
             lng: 2.3364526,
+            save: false,
         },
         router: {
             name: 'human',
@@ -136,6 +137,13 @@ module.exports.load = function() {
         logger.error('Invalid credentials. Please fill data/config.yaml.');
         logger.error('look at config.example.yaml for example.');
         process.exit();
+    }
+
+    if (config.pos.save && fs.existsSync(`data/position.json`)) {
+        logger.info('Load position from file.');
+        const pos = JSON.parse(fs.readFileSync(`data/position.json`, 'utf8'));
+        pos.save = true;
+        config.pos = pos;
     }
 
     return config;
