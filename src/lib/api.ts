@@ -200,6 +200,9 @@ export default class APIHelper {
                         msg = msg.replace('{0}', candy);
                         logger.info('[Award] ' + msg);
                     }
+                } else if (item.__type === 'FUserInfo') {
+                    const userinfo = item as objects.FUserInfo;
+                    this.state.player.nickname = userinfo.nickname;
                 } else {
                     logger.warn('Unhandled object in map update: ' + item.__type);
                 }
