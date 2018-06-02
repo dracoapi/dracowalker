@@ -21,26 +21,26 @@
     "dotenv": "^5.0.1",
     "draconode": "^0.7.0",
     "dracotext": "^1.2.0",
-    "fastify": "^1.4.0",
+    "fastify": "^1.5.0",
     "geolib": "^2.0.24",
     "googlemaps": "^1.12.0",
-    "js-yaml": "^3.11.0",
+    "js-yaml": "^3.12.0",
     "lodash": "^4.17.10",
     "minimist": "^1.2.0",
-    "moment": "^2.22.1",
+    "moment": "^2.22.2",
     "mz": "^2.7.0",
     "nedb-promise": "^2.0.1",
-    "request": "^2.86.0",
+    "request": "^2.87.0",
     "request-promise-native": "^1.0.5",
     "semver": "^5.5.0",
-    "socket.io": "^2.1.0",
+    "socket.io": "^2.1.1",
     "universal-analytics": "^0.4.16",
     "winston": "^2.4.2",
     "xml2js-es6-promise": "^1.1.1",
     "yaml": "^0.3.0"
   },
   "devDependencies": {
-    "@types/node": "^10.0.3"
+    "@types/node": "^10.3.0"
   },
   "pkg": {
     "scripts": [

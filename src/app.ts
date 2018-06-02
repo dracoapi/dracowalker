@@ -118,9 +118,9 @@ async function main() {
         logger.debug('Get creatures...');
         await player.getCreatures();
 
-        socket.ready();
-
         await mapRefresh();
+
+        socket.ready();
 
         if (newLicence > 0) {
             await client.acceptLicence(newLicence);
