@@ -18,7 +18,7 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "cheerio": "^1.0.0-rc.2",
-    "dotenv": "^5.0.1",
+    "dotenv": "^6.0.0",
     "draconode": "^0.7.0",
     "dracotext": "^1.2.0",
     "fastify": "^1.5.0",
