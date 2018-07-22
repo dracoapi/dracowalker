@@ -45,7 +45,7 @@ export default class Player {
                     const drop = item.count - Math.min(item.count, limits[item.type]);
                     if (drop > 0) {
                         const itemname = strings.getItem(enums.ItemType[item.type]);
-                        logger.debug('  drop %d of %s', drop, itemname);
+                        logger.debug(`  drop ${drop} of ${itemname}`);
                         const response = await client.inventory.discardItem(item.type, drop);
                         if (!response) {
                             logger.warn('Error dropping items');
@@ -73,7 +73,7 @@ export default class Player {
                                           this.distance(b) < range);
 
         await Bluebird.map(buildings, async building => {
-            logger.debug('Use building %s', building.id);
+            logger.debug(`Use building ${building.id}`);
             try {
                 if (this.distance(building) >= 0.50 * range) return;
                 if (building.type === enums.BuildingType.PORTAL) {

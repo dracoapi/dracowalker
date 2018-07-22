@@ -112,7 +112,7 @@ export default class ProxyHelper {
 
             this.proxy = proxy;
             this.state.proxy = proxy;
-            logger.info('Using proxy: %s', proxy);
+            logger.info('Using proxy: ' + proxy);
             return true;
         } catch (e) {
             logger.error(e);
