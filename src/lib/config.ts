@@ -7,7 +7,6 @@ import * as path from 'path';
 import { enums } from 'draconode';
 
 const yaml = require('js-yaml');
-const winstonCommon = require('winston/lib/winston/common');
 
 function fixInventoryLimitConfig(config) {
     for (const item in config.inventory) {
@@ -96,31 +95,21 @@ module.exports.load = function() {
         };
     }
 
-    if (process.env.VSCODE_CWD) {
-        // fix an issue with integrated Visual Studio Code terminal
-        logger.transports.Console.prototype.log = function (level, message, meta, callback) {
-            const output = winstonCommon.log(Object.assign({}, this, {
-                level,
-                message,
-                meta,
-            }));
-            console[level === 'error' ? 'error' : 'log'](output);
-            setImmediate(callback, null, true);
-        };
-    }
-
-    logger.remove(logger.transports.Console);
-    logger.add(logger.transports.Console, {
-        'timestamp': () => moment().format('HH:mm:ss'),
-        'colorize': true,
-        'level': config.log.level,
-    });
-
-    logger.add(logger.transports.File, {
-        'timestamp': () => moment().format('HH:mm:ss'),
-        'filename': `data/${config.log.file}`,
-        'json': false,
-        'level': config.log.filelevel || config.log.level,
+    logger.configure({
+        level: config.log.level,
+        format: logger.format.combine(
+            logger.format.timestamp(),
+            logger.format.printf(
+                info => `[${moment(info.timestamp).format('HH:mm:ss')}] ${info.level} - ${info.message}`,
+            ),
+        ),
+        transports: [
+            new logger.transports.Console(),
+            new logger.transports.File({
+                'filename': `data/${config.log.file}`,
+                'level': config.log.filelevel || config.log.level,
+            }),
+        ],
     });
 
     if (!fs.existsSync(`data/${filename}`)) {

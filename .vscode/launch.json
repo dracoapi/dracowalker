@@ -16,7 +16,8 @@
             },
             "outFiles": [ "${workspaceRoot}/bin/**/*.js" ],
             "sourceMaps": true,
-            "stopOnEntry": false
+            "stopOnEntry": false,
+            "outputCapture": "std"
         }
     ]
 }
