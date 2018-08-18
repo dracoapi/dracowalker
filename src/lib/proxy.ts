@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as logger from 'winston';
 import * as moment from 'moment';
 import * as request from 'request-promise-native';
-import { fs } from 'mz';
+import { promises as fs } from 'fs';
 
 const cheerio = require('cheerio');
 
@@ -66,7 +66,7 @@ export default class ProxyHelper {
 
                 const ip = JSON.parse(response).ip;
                 if (this.clearIp === ip) {
-                    this.badProxy();
+                    await this.badProxy();
                     return false;
                 }
             }
@@ -82,7 +82,7 @@ export default class ProxyHelper {
             });
             return true;
         } catch (e) {
-            this.badProxy(proxy);
+            await this.badProxy(proxy);
             return false;
         }
     }
@@ -93,7 +93,7 @@ export default class ProxyHelper {
      * @return {Promise} with true or false
      */
     async checkProxy() {
-        if (fs.existsSync('data/bad.proxies.json')) {
+        if ((await fs.stat('data/bad.proxies.json')).isFile()) {
             // we put all bad proxy in a file, and keep them for 5 days
             const loaded = await fs.readFile('data/bad.proxies.json', 'utf8');
             this.badProxies = JSON.parse(loaded);
@@ -123,7 +123,7 @@ export default class ProxyHelper {
     /**
      * Add the current proxy in our bad proxy database so we won't use it anymore.
      */
-    badProxy(proxy?: string): void {
+    async badProxy(proxy?: string) {
         proxy = proxy || this.proxy;
         if (!_.find(this.badProxies, p => p.proxy === proxy)) {
             if (this.config.proxy.url !== 'auto') logger.warn('Configured proxy looks bad.');
@@ -131,7 +131,7 @@ export default class ProxyHelper {
                 proxy,
                 date: Date.now(),
             });
-            fs.writeFileSync('data/bad.proxies.json', JSON.stringify(this.badProxies, null, 4));
+            await fs.writeFile('data/bad.proxies.json', JSON.stringify(this.badProxies, null, 4));
         }
     }
 }

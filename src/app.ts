@@ -3,7 +3,7 @@ require('dotenv').config();
 import * as logger from 'winston';
 import { Client, enums } from 'draconode';
 import * as _ from 'lodash';
-import * as fs from 'mz/fs';
+import { promises as fs } from 'fs';
 import * as moment from 'moment';
 import * as Bluebird from 'bluebird';
 import * as dracoText from 'dracotext';
@@ -151,7 +151,7 @@ async function main() {
             e.message.indexOf('403') >= 0) { // ip banned?
             logger.error('Bad proxy');
             // logger.error(e.message);
-            proxyhelper.badProxy();
+            await proxyhelper.badProxy();
         } else {
             logger.error(e);
         }

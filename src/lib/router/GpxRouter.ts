@@ -1,4 +1,4 @@
-import * as fs from 'mz/fs';
+import { promises as fs } from 'fs';
 import * as xml2js from 'xml2js-es6-promise';
 
 import { BaseRouter, Target } from './BaseRouter';
@@ -11,7 +11,7 @@ export default class GpxRouter extends BaseRouter {
     async init() {
         this.initdone = true;
         const gpxfile = this.config.router.gpx;
-        if (!gpxfile || !fs.existsSync(`data/${gpxfile}`)) {
+        if (!gpxfile || !(await fs.stat(`data/${gpxfile}`)).isFile()) {
             throw new Error('GPX file not defined or does not exists.');
         }
 

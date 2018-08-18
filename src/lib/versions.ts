@@ -1,5 +1,5 @@
 import * as logger from 'winston';
-import * as fs from 'mz/fs';
+import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as request from 'request-promise-native';
 import * as semver from 'semver';
@@ -11,7 +11,7 @@ export async function getVersion(): Promise<string> {
         const file = path.join(__dirname, '../../version');
         if (!process['pkg']) {
             _version = 'source';
-        } else if (!fs.existsSync(file)) {
+        } else if (!(await fs.stat(file)).isFile()) {
             _version = 'unknown';
         } else {
             let content: string = await fs.readFile(file, 'utf8');
