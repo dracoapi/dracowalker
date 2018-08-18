@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as logger from 'winston';
 import * as moment from 'moment';
 import * as request from 'request-promise-native';
-import { promises as fs } from 'fs';
+import * as fs from 'mz/fs';
 
 import { fileExists } from '../utils';
 

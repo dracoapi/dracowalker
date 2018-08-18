@@ -28,6 +28,7 @@
     "lodash": "^4.17.10",
     "minimist": "^1.2.0",
     "moment": "^2.22.2",
+    "mz": "^2.7.0",
     "nedb-promise": "^2.0.1",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
@@ -44,6 +45,9 @@
   "pkg": {
     "scripts": [
       "node_modules/dracotext/languages/generated.english.js"
+    ],
+    "assets": [
+      "version"
     ],
     "targets": [
       "node10-linux-x64",
