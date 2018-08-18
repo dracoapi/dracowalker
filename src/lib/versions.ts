@@ -4,6 +4,8 @@ import * as path from 'path';
 import * as request from 'request-promise-native';
 import * as semver from 'semver';
 
+import { fileExists } from '../utils';
+
 let _version: string;
 
 export async function getVersion(): Promise<string> {
@@ -11,7 +13,7 @@ export async function getVersion(): Promise<string> {
         const file = path.join(__dirname, '../../version');
         if (!process['pkg']) {
             _version = 'source';
-        } else if (!(await fs.stat(file)).isFile()) {
+        } else if (!fileExists(file)) {
             _version = 'unknown';
         } else {
             let content: string = await fs.readFile(file, 'utf8');
