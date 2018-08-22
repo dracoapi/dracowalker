@@ -4,8 +4,6 @@ import * as moment from 'moment';
 import * as request from 'request-promise-native';
 import * as fs from 'mz/fs';
 
-import { fileExists } from '../utils';
-
 const cheerio = require('cheerio');
 
 /**
@@ -95,7 +93,7 @@ export default class ProxyHelper {
      * @return {Promise} with true or false
      */
     async checkProxy() {
-        if (fileExists('data/bad.proxies.json')) {
+        if (fs.existsSync('data/bad.proxies.json')) {
             // we put all bad proxy in a file, and keep them for 5 days
             const loaded = await fs.readFile('data/bad.proxies.json', 'utf8');
             this.badProxies = JSON.parse(loaded);

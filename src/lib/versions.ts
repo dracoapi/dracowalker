@@ -4,8 +4,6 @@ import * as path from 'path';
 import * as request from 'request-promise-native';
 import * as semver from 'semver';
 
-import { fileExists } from '../utils';
-
 let _version: string;
 
 export async function getVersion(): Promise<string> {

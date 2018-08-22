@@ -76,6 +76,8 @@ async function main() {
         analytics.pageview('/').send();
         analytics.event('version', await versions.getVersion()).send();
 
+        logger.debug(`Using api ${client.clientVersion}/${client.protocolVersion}`);
+
         logger.debug('Init walker...');
         await walker.checkPath();
         await walker.walk();
