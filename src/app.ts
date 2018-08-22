@@ -3,7 +3,7 @@ require('dotenv').config();
 import * as logger from 'winston';
 import { Client, enums } from 'draconode';
 import * as _ from 'lodash';
-import { promises as fs } from 'fs';
+import * as fs from 'mz/fs';
 import * as moment from 'moment';
 import * as Bluebird from 'bluebird';
 import * as dracoText from 'dracotext';
