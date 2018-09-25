@@ -3,10 +3,9 @@ import * as logger from 'winston';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as path from 'path';
+import YAML from 'yaml';
 
 import { enums } from 'draconode';
-
-const yaml = require('js-yaml');
 
 function fixInventoryLimitConfig(config) {
     for (const item in config.inventory) {
@@ -80,7 +79,7 @@ module.exports.load = function() {
     config.statename = `state${config.name.replace('config', '')}`;
 
     if (fs.existsSync(`data/${filename}`)) {
-        const loaded = yaml.safeLoad(fs.readFileSync(`data/${filename}`, 'utf8'));
+        const loaded = YAML.parse(fs.readFileSync(`data/${filename}`, 'utf8'));
         config = _.defaultsDeep(loaded, config);
     }
 
