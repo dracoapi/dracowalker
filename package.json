@@ -30,7 +30,7 @@
     "mz": "^2.7.0",
     "nedb-promise": "^2.0.1",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.5",
+    "request-promise-native": "1.0.5",
     "semver": "^5.5.1",
     "socket.io": "^2.1.1",
     "universal-analytics": "^0.4.17",
