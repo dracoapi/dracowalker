@@ -39,7 +39,7 @@
     "yaml": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "^10.10.3"
+    "@types/node": "^11.11.4"
   },
   "pkg": {
     "scripts": [
