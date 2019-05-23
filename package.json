@@ -36,7 +36,7 @@
     "universal-analytics": "^0.4.17",
     "winston": "^3.1.0",
     "xml2js-es6-promise": "^1.1.1",
-    "yaml": "^1.0.0"
+    "yaml": "^1.6.0"
   },
   "devDependencies": {
     "@types/node": "^10.10.3"
