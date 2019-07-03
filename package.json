@@ -10,7 +10,9 @@
   "scripts": {
     "build": "tsc",
     "tslint": "tslint -c tslint.json 'src/**/*.ts'",
-    "pack": "pkg package.json -o dist/dracowalker"
+    "pack": "pkg package.json -o dist/dracowalker",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "keywords": [],
   "author": "niico",
@@ -36,7 +38,8 @@
     "universal-analytics": "^0.4.17",
     "winston": "^3.1.0",
     "xml2js-es6-promise": "^1.1.1",
-    "yaml": "^1.0.0"
+    "yaml": "^1.0.0",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@types/node": "^10.10.3"
@@ -54,5 +57,6 @@
       "node10-win-x64",
       "node10-win-x86"
     ]
-  }
+  },
+  "snyk": true
 }
