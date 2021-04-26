@@ -32,7 +32,7 @@
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
     "semver": "^5.5.1",
-    "socket.io": "^2.1.1",
+    "socket.io": "^3.0.0",
     "universal-analytics": "^0.4.17",
     "winston": "^3.1.0",
     "xml2js-es6-promise": "^1.1.1",
